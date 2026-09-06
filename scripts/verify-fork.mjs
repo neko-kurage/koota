@@ -8,7 +8,7 @@ if (process.versions.node !== expectedNode) {
     throw new Error(`Use Node ${expectedNode}; current Node is ${process.versions.node}`);
 }
 
-// Use upstream's pinned package manager and build transforms for the actual packed artifact.
+// 上流の固定package managerとbuild変換を使い、実際にpackする配布物を検証する。
 const commands = [
     ['typecheck'],
     ['test', 'run'],

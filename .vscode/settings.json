@@ -4,5 +4,6 @@
   "oxc.disableNestedConfig": false,
   "biome.enabled": false,
   "eslint.enable": false,
-  "prettier.configPath": ".config/prettier/base.json"
+  "prettier.configPath": ".config/prettier/base.json",
+  "better-todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO", "XXX", "[ ]", "[x]", "FORK"]
 }
