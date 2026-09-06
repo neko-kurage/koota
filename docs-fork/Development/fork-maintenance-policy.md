@@ -1,6 +1,6 @@
 # Koota forkの上流追従方針
 
-2026-09-06。neko `442b5f7`、Koota 0.6.6から開始するforkの採用方針。公開forkと環境は準備済み。個別性能実験は実施済み、nekoの依存切替は未実施。状態は[fork Audit](audit.md)、手順は[開発環境](fork-workflow.md)、候補は[調査資料](History/Runtime/performance-candidates/2026-09-06_existing-feature-candidates.md)を参照する。
+2026-09-06。neko `442b5f7`、Koota 0.6.6から開始するforkの採用方針。公開forkと環境は準備済み。個別性能実験とnekoの固定配布物への依存切替は実施済み。状態は[fork Audit](audit.md)、手順は[開発環境](fork-workflow.md)、候補は[調査資料](History/Runtime/performance-candidates/2026-09-06_existing-feature-candidates.md)を参照する。
 
 ## 基本方針
 
@@ -29,7 +29,7 @@ upstream remoteは公式repository、originはforkとする。上流のrelease t
 
 ## 3. 依存は検証済みの成果物へ固定する
 
-現在の`koota: ^0.6.6`はfork導入時に厳密なversion指定へ変更し、lockfileのintegrityとforkのsource SHAを対応付ける。配布先は未決定だが、build済みの不変なpackageを使い、可変branchや最新版へ直接依存しない。package aliasで既存の`koota`というimport名を維持する案を優先し、公開宣言・bundlerを含めて検証する。
+neko repositoryのvendorにbuild済みtgzを置き、file依存とlockfileのintegrity、manifestのsource SHAで固定する。npmなどへのpackage公開、package alias、可変branchへの依存は使わない。ローカルversionと更新の手順は[固定配布物の運用](fork-workflow.md#自分用の固定配布物)に集約する。
 
 導入済みpackageにはcollectionsの先行buildなどの手順があり、inline変換用の依存もある。ソースを単にコピーしたり別のbundlerでまとめたりせず、上流のbuild設定を確認して維持する。比較も実際に配布する成果物で行う。
 
@@ -68,4 +68,4 @@ upstream remoteは公式repository、originはforkとする。上流のrelease t
 
 初回は[Queryのcopy調査](Performance/Query/query-copy/2026-09-06_query-copy-inspection.md)から始め、七候補を一つずつ比較した。採否・検証範囲・再開条件は[性能実験](Performance/Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)と[Audit](audit.md)を正本とする。新しい候補や上流更新でも、一括変更する前に独立した比較を行う。
 
-forkはneko-kurage/koota。package配布先と固定versionは導入時に決める。Entity有効化の契約変更と、既存機能の最適化を混ぜない。
+forkはneko-kurage/koota。packageはnekoのvendorで固定し、追加公開しない。Entity有効化の契約変更と、既存機能の最適化を混ぜない。

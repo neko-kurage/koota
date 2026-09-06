@@ -26,3 +26,7 @@
 
 - [初回Query不具合の着手記録](Query/initial-population/2026-09-06-scope.md)
 - [修正と検証](Query/initial-population/2026-09-06-fix.md)
+
+## Koota/distribution
+
+- [修正版配布物のneko導入](Koota/distribution/2026-09-07-neko-integration.md)
