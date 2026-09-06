@@ -11,3 +11,7 @@ verify-fork成功：collections 23・core 153・React 37、生成配布物190テ
 ユーザー承認によりfeature/vector-update-readerでコミットする。branch統合・remote CIは今回のコミット範囲に含めない。
 
 nekoはその後、更新callbackをscalar列の編集copyへ正式移行した。借用viewは削除したが、get/readEachの構造化snapshotとupdateEachを分離する本変更は引き続き必要である。最終のneko verifyは481テスト、ブラウザ描画とInspector編集も確認した。
+
+## 統合
+
+ユーザー承認によりreader分離commit `c9037f3`をdevelopへ早送り統合してpushし、[Fork checks](https://github.com/neko-kurage/koota/actions/runs/34047263351)の成功を確認した。完了した項目をAuditから削除し、この記録を含むdevelopをmainにも反映する。最終commitの両branchのFork checksを確認する。上流の新規変更は取り込まず、npm・Releases・Pagesへの公開や配布物の再生成は行わない。nekoの固定tgzは引き続き同じsourceを含む。

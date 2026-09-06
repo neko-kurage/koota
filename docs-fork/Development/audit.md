@@ -1,5 +1,5 @@
 # 残作業
 
-| ID | 状態 | 次の作業 |
-| --- | --- | --- |
-| Query/update-reader | ローカル採用・統合待ち | [検証記録](History/Query/update-reader/2026-09-07-experiment.md)を確認し、承認後にdevelop・mainへ統合してremote CIを確認する。nekoには固定tgzで導入済み。 |
+現在、着手が必要な登録済み項目はない。
+
+新しい候補や上流更新が生じたときに追加する。完了記録は[History](History/00_index.md)、普段の更新は[開発手順](fork-workflow.md)を参照する。
