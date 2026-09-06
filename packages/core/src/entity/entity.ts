@@ -31,86 +31,92 @@ export function createEntity(world: World, ...traits: ConfigurableTrait[]): Enti
 
 const cachedSet = new Set<Entity>();
 const cachedQueue = [] as Entity[];
+let destroyDepth = 0;
 
 export function destroyEntity(world: World, entity: Entity) {
     const ctx = world[$internal];
 
-    // Check if entity exists.
+    // FORK(Entity/reentrant-destroy): 外側の削除待ちを残して、内側の呼出しを同期処理する。
+    // 同じ個体への再入は二重解放せず、通常の破棄済み参照への操作は従来どおり拒否する。
+    if (destroyDepth > 0 && cachedSet.has(entity)) return;
     if (!world.has(entity)) throw new Error('Koota: The entity being destroyed does not exist.');
 
-    // Caching the lookup in the outer scope of the loop increases performance.
     const entityQueue = cachedQueue;
     const processedEntities = cachedSet;
-
-    // Ensure the queue is empty before starting.
-    entityQueue.length = 0;
+    const start = entityQueue.length;
+    destroyDepth++;
     entityQueue.push(entity);
-    processedEntities.clear();
 
-    // Destroyed entities may be the target or source of relations.
-    // To avoid stale references, all these relations must be removed.
-    // autoDestroy controls cascade behavior:
-    // - 'source' (or 'orphan'): when target dies, destroy sources (e.g., parent dies → children die)
-    // - 'target': when source dies, destroy targets (e.g., container dies → items die)
-    while (entityQueue.length > 0) {
-        const currentEntity = entityQueue.pop()!;
-        if (processedEntities.has(currentEntity)) continue;
+    try {
+        // Destroyed entities may be the target or source of relations.
+        // To avoid stale references, all these relations must be removed.
+        // autoDestroy controls cascade behavior:
+        // - 'source' (or 'orphan'): when target dies, destroy sources (e.g., parent dies → children die)
+        // - 'target': when source dies, destroy targets (e.g., container dies → items die)
+        while (entityQueue.length > start) {
+            const currentEntity = entityQueue.pop()!;
+            if (processedEntities.has(currentEntity)) continue;
 
-        processedEntities.add(currentEntity);
+            processedEntities.add(currentEntity);
 
-        for (const relation of ctx.relations) {
-            const relationCtx = relation[$internal];
+            for (const relation of ctx.relations) {
+                const relationCtx = relation[$internal];
 
-            // Handle entities that have relations pointing TO currentEntity (currentEntity is target)
-            // If autoDestroy is 'orphan', destroy those sources
-            const sources = getEntitiesWithRelationTo(world, relation, currentEntity);
-            for (let si = sources.length - 1; si >= 0; si--) {
-                const source = sources[si];
-                if (!world.has(source)) continue;
+                // Handle entities that have relations pointing TO currentEntity (currentEntity is target)
+                // If autoDestroy is 'orphan', destroy those sources
+                const sources = getEntitiesWithRelationTo(world, relation, currentEntity);
+                for (let si = sources.length - 1; si >= 0; si--) {
+                    const source = sources[si];
+                    if (!world.has(source)) continue;
 
-                cleanupRelationTarget(world, relation, source, currentEntity);
+                    cleanupRelationTarget(world, relation, source, currentEntity);
 
-                if (relationCtx.autoDestroy === 'source') entityQueue.push(source);
-            }
+                    if (relationCtx.autoDestroy === 'source') entityQueue.push(source);
+                }
 
-            // Handle relations where currentEntity is the source pointing to targets
-            // If autoDestroy is 'target', destroy those targets
-            if (relationCtx.autoDestroy === 'target') {
-                const targets = getRelationTargets(world, relation, currentEntity);
-                for (const target of targets) {
-                    if (!world.has(target)) continue;
-                    if (!processedEntities.has(target)) entityQueue.push(target);
+                // Handle relations where currentEntity is the source pointing to targets
+                // If autoDestroy is 'target', destroy those targets
+                if (relationCtx.autoDestroy === 'target') {
+                    const targets = getRelationTargets(world, relation, currentEntity);
+                    for (const target of targets) {
+                        if (!world.has(target)) continue;
+                        if (!processedEntities.has(target)) entityQueue.push(target);
+                    }
                 }
             }
-        }
 
-        // Remove all traits of the current entity.
-        const entityTraits = ctx.entityTraits.get(currentEntity);
-        if (entityTraits) {
-            for (const trait of entityTraits) {
-                removeTrait(world, currentEntity, trait);
+            // Remove all traits of the current entity.
+            const entityTraits = ctx.entityTraits.get(currentEntity);
+            if (entityTraits) {
+                for (const trait of entityTraits) {
+                    removeTrait(world, currentEntity, trait);
+                }
+            }
+
+            // Free the entity.
+            releaseEntity(ctx.entityIndex, currentEntity);
+            clearEntityActivation(world, currentEntity);
+
+            // Remove the entity from the all query.
+            const allQuery = ctx.queriesHashMap.get('');
+            if (allQuery) allQuery.remove(world, currentEntity);
+            // FORK(Prefab/entity-activation): IncludeDisabledだけの集合も、Traitが空の削除を受け取る。
+            const allDisabledQuery = ctx.queriesHashMap.get('-1');
+            if (allDisabledQuery) allDisabledQuery.remove(world, currentEntity);
+
+            // Remove all entity state from world.
+            ctx.entityTraits.delete(currentEntity);
+
+            // Clear entity bitmasks.
+            const eid = getEntityId(currentEntity);
+            for (let i = 0; i < ctx.entityMasks.length; i++) {
+                ctx.entityMasks[i][eid] = 0;
             }
         }
-
-        // Free the entity.
-        releaseEntity(ctx.entityIndex, currentEntity);
-        clearEntityActivation(world, currentEntity);
-
-        // Remove the entity from the all query.
-        const allQuery = ctx.queriesHashMap.get('');
-        if (allQuery) allQuery.remove(world, currentEntity);
-        // FORK(Prefab/entity-activation): IncludeDisabledだけの集合も、Traitが空の削除を受け取る。
-        const allDisabledQuery = ctx.queriesHashMap.get('-1');
-        if (allDisabledQuery) allDisabledQuery.remove(world, currentEntity);
-
-        // Remove all entity state from world.
-        ctx.entityTraits.delete(currentEntity);
-
-        // Clear entity bitmasks.
-        const eid = getEntityId(currentEntity);
-        for (let i = 0; i < ctx.entityMasks.length; i++) {
-            ctx.entityMasks[i][eid] = 0;
-        }
+    } finally {
+        // 例外ではこの呼出しの未処理分だけを捨てる。外側の待ち一覧とゲーム状態は戻さない。
+        entityQueue.length = start;
+        if (--destroyDepth === 0) processedEntities.clear();
     }
 }
 

@@ -29,7 +29,7 @@ GitHub fork・origin接続・branch登録は完了。環境ファイルと移管
 
 ## 現行機能の改善候補
 
-2026-09-06にnekoの性能AuditからIDと状態を維持して移管。旧FORK-PERF-01はKOOTA-PERF-01と重複していたため統合した。根拠は[調査資料](2026-09-06_existing-feature-candidates.md)、測定は[Query copy](../../../Performance/Query/query-copy/2026-09-06_query-copy-inspection.md)。候補は実装承認ではない。Entity有効化APIとVECTOR-PERF-01は[neko側Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_open-questions.md)と[性能Audit](../../../../../../neko-threejs/docs/Development/History/Runtime/update-cost/2026-09-06_runtime-performance-audit.md)で継続する。
+2026-09-06にnekoの性能AuditからIDと状態を維持して移管。旧FORK-PERF-01はKOOTA-PERF-01と重複していたため統合した。根拠は[調査資料](2026-09-06_existing-feature-candidates.md)、測定は[Query copy](../../../Performance/Query/query-copy/2026-09-06_query-copy-inspection.md)。候補は実装承認ではない。Entity有効化APIとVECTOR-PERF-01は[neko側Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/feature-control/2026-09-06_open-questions.md)と[性能Audit](../../../../../../neko-threejs/docs/Development/History/Runtime/update-cost/2026-09-06_runtime-performance-audit.md)で継続する。
 
 | ID            | 候補                                   | 状態   | 次に確認すること                                                                                     |
 | ------------- | -------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |

@@ -34,3 +34,7 @@ readEach/updateEachは呼出し直前のdisabled bitを確認する。取得済�
 2026-09-06、ユーザーが今回の測定済み追加費用を許容し、性能面の採用保留を解除した。読取APIの命名は検討中。測定結果自体や他の変更の性能条件は書き換えない。
 
 2026-09-06、読取名はisEnabled/isActiveを維持することで合意。EntityとPrefab Instanceの切替範囲も説明し、コミットを承認された。
+
+## 契約確認の完了
+
+2026-09-06、Queryは呼出し直前の有効状態で判断し、汎用Queryへresource使用期間を暗黙に接続しない現行動作で合意。確認項目をAuditから削除した。[現行契約](../../../../Architecture/Structure/Entity/01-activation.md)を正本とし、上記の保留記述は当時の経緯として保持する。

@@ -14,10 +14,6 @@
 
 - [Koota/distribution](Koota/distribution/2026-09-06_scope.md)
 
-## Prefab/entity-activation
+## Query/initial-population
 
-- [Entity・Prefab・機能の制御：議論の整理](Prefab/entity-activation/2026-09-06_execution-control-discussion.md)
-
-## Prefab/entity-activation
-
-- [Entity有効化の実装と採用条件](Prefab/entity-activation/2026-09-06_implementation.md)
+- [初回Queryへの破棄済みEntity混入](Query/initial-population/2026-09-06-scope.md)

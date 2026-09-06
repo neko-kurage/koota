@@ -24,7 +24,7 @@ Vectorと選択付きSystemの更新経路の統合には大きな余地があ�
 | KOOTA-PERF-06 | Entity削除通知とlifetime接続を明示する                   | 破棄時の間接処理を減らせる可能性           | 空Queryによる削除検出の代用を解消できる         | 中。Relation連鎖・通知順・再入の確認が必要        |
 | KOOTA-PERF-07 | 診断・projection情報の正式API                            | 性能目的では優先しない                     | $internal参照と一部型castを減らす               | 小。安定した読取APIに限定可能                     |
 
-既存PrefabのInactive TagをECSのEntity enabledへ置き換える候補は、[有効化Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_open-questions.md)のKOOTA-FORK-01で追跡し、ここへ重複登録しない。Entity APIをclassへ全面変更する案も別の設計変更で、今回の速度改善の前提にしない。
+既存PrefabのInactive TagをECSのEntity enabledへ置き換える候補は、[有効化Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/feature-control/2026-09-06_open-questions.md)のKOOTA-FORK-01で追跡し、ここへ重複登録しない。Entity APIをclassへ全面変更する案も別の設計変更で、今回の速度改善の前提にしない。
 
 ## 1. Queryのcopy：最初に比較したい具体的な問題
 

@@ -7,4 +7,4 @@ Entity.has経由の各個体チェックはp50約0.069〜0.073msから0.102〜0.
 
 [生結果](2026-09-06_native-results.jsonl)はABBA順。[script](2026-09-06_native-update.mjs)の第一引数へ測定対象moduleの絶対pathを渡す。複数の配布物を同一processに読まない。
 
-[実装と採用条件](../../../Discussion/Prefab/entity-activation/2026-09-06_implementation.md)を確認してから再開する。
+[実装と採用条件](../../../History/Prefab/entity-activation/2026-09-06_implementation.md)を確認してから再開する。

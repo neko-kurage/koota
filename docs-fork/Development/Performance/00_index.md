@@ -13,3 +13,7 @@
 ## Prefab/entity-activation
 
 - [Entity有効化の更新費用](Prefab/entity-activation/2026-09-06_measurements.md)
+
+## Entity/reentrant-destroy
+
+- [通常の削除経路比較](Entity/reentrant-destroy/2026-09-06-measurements.md)

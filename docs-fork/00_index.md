@@ -12,3 +12,7 @@ neko-threejsと同じ分類を使う。
 | Guides       | 利用手順・Quick Start・Concepts                                       |
 
 現在の独自資料は[Development](Development/00_index.md)と、追加APIの[Query結果の絞込み](API/query-results.md)・[EntityのTrait一覧](API/entity-traits.md)にある。Architecture・Guidesは該当資料が生まれた時に追加する。ファイル名は上流のkebab-case規則に従う。
+
+現行の[Entity有効状態とQuery参加](Architecture/Structure/Entity/01-activation.md)はArchitectureに記録する。
+
+Entityの[削除と再入](Architecture/Structure/Entity/02-destruction.md)もArchitectureを正本とする。
