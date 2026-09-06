@@ -9,7 +9,7 @@
 - origin: git@github.com:neko-kurage/koota.git。公開forkへ接続済み。
 - Node: .node-version、pnpm: package.jsonのpackageManagerに固定する。
 
-neko-threejsの作業ルール・Audit・一括検証という構成を参考にする。上流のsource配置、pnpm workspace、formatterとbuildは維持する。runtime候補の採否と検証は[Audit](fork-audit.md)を参照する。
+neko-threejsの作業ルール・Audit・一括検証という構成を参考にする。上流のsource配置、pnpm workspace、formatterとbuildは維持する。runtime候補の採否と検証は[Audit](audit.md)を参照する。
 
 ## 作業開始
 
@@ -46,8 +46,8 @@ fork-checks.ymlはmain・develop・feature/\*のpush、main・developへのPR、
 
 ## 作業の記録
 
-[fork Audit](fork-audit.md)で変更理由、状態、検証と次の作業を追跡する。Prefab・Componentのlifetime契約はneko側に残す。hot pathへgame-state rollbackを導入しない。cleanupとborrowed値の寿命チェックは維持する。
+[fork Audit](audit.md)で変更理由、状態、検証と次の作業を追跡する。Prefab・Componentのlifetime契約はneko側に残す。hot pathへgame-state rollbackを導入しない。cleanupとborrowed値の寿命チェックは維持する。
 
 ## 関連する方針
 
-[資料一覧](index.md)、[上流追従方針](fork-maintenance-policy.md)、[開発原則](development-rules.md)、[Audit運用](audit-workflow.md)を参照する。
+[資料一覧](00_index.md)、[上流追従方針](fork-maintenance-policy.md)、[開発原則](development-rules.md)、[Audit運用](History/Documentation/layout/2026-09-06_previous-audit-workflow.md)を参照する。

@@ -1,0 +1,11 @@
+# Performance
+
+
+## Query/query-copy
+
+- [Koota Queryのコピー回数確認](Query/query-copy/2026-09-06_query-copy-inspection.md)
+
+## Runtime/performance-candidates
+
+- [Koota既存機能候補の個別評価 v1](Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)
+- [Koota fork候補03〜06の実験結果](Runtime/performance-candidates/2026-09-06_rejected-candidates-v1.md)

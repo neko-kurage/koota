@@ -14,7 +14,7 @@
 | 06  | 見送り           | 削除hookだけでは除外時のScope終了、通知順、再入を代替できない                                                           |
 | 07  | 診断APIだけ採用  | getEntityTraitsで内部Setへの型変換依存を解消。列読取・projection APIは追加しない                                        |
 
-03〜06の実測・実行再現と再開条件は[個別レポート](rejected-candidates-v1.md)。状態の正本は[Audit](../fork-audit.md)。採用差分と本資料は同じコミットへ収録。公開・neko依存切替は未実施。
+03〜06の実測・実行再現と再開条件は[個別レポート](2026-09-06_rejected-candidates-v1.md)。状態の正本は[Audit](../../../audit.md)。採用差分と本資料は同じコミットへ収録。公開・neko依存切替は未実施。
 
 ## 単体測定の条件
 
@@ -50,11 +50,11 @@ Array.sliceを計数する別実行で確認。計数wrapperを時間測定に�
 | 01aのみ | 1 / 1000                         | 1002 / 501500                     |
 | 01a+01b | 1 / 1000                         | 2 / 1000                          |
 
-元の[計数コード](query-copy-inspection.md#再確認コード)をそれぞれの配布物へ適用。SparseSet.denseの独立copyを残し、除外snapshotの取得回数だけを制限する。remove自身にcallbackはないため、逆順と再追加時の除外取消しを維持できる。
+元の[計数コード](../../Query/query-copy/2026-09-06_query-copy-inspection.md#再確認コード)をそれぞれの配布物へ適用。SparseSet.denseの独立copyを残し、除外snapshotの取得回数だけを制限する。remove自身にcallbackはないため、逆順と再追加時の除外取消しを維持できる。
 
 ## 再現
 
-[単体ベンチ](../../../benches/fork/candidate-cost.mjs)にbuild済み配布物の絶対パスとmodeを渡す。例:
+[単体ベンチ](../../../../../benches/fork/candidate-cost.mjs)にbuild済み配布物の絶対パスとmodeを渡す。例:
 
 ```sh
 node --expose-gc benches/fork/candidate-cost.mjs /absolute/baseline/dist/index.js query
@@ -64,7 +64,7 @@ COUNT=1000 node --expose-gc benches/fork/candidate-cost.mjs /absolute/candidate/
 
 modeはquery/scalar/remove/filter/diagnostics。比較元のreadonly結果を加工する旧loop、旧内部診断はfixture内に残している。候補APIがある場合にそのAPIを使う。01aはquery.entities.denseの追加slice除去だけ、01bはtoRemove.denseの一回取得だけ、02はretainQueryResultとexport、07はgetEntityTraitsとexport。独立checkoutで各差分を通常buildし、必ず別processで比較する。
 
-[neko接続差分](../History/neko-integration.patch)は19f99b8向け。実際の依存切替では固定した配布version/integrityとsource SHAを決め、同じprocessに複数Kootaを入れない。今回の検証は独立checkoutのnode_modulesにbuild済みdistを入れ、元checkoutの依存とlockfileは変更していない。
+[neko接続差分](../../../History/Koota/fork-integration/2026-09-06_neko-integration.patch)は19f99b8向け。実際の依存切替では固定した配布version/integrityとsource SHAを決め、同じprocessに複数Kootaを入れない。今回の検証は独立checkoutのnode_modulesにbuild済みdistを入れ、元checkoutの依存とlockfileは変更していない。
 
 ## 診断の呼出境界の追試
 

@@ -1,8 +1,8 @@
 # 現行機能をKoota forkで改善できるか
 
-2026-09-06の調査記録。対象はneko `442b5f7`と導入済みKoota 0.6.6。変更中のecs/query・adapter・SystemAttachmentはHEADとも比較し、**中断中のTraitParticipation試作を現行機能や改善根拠へ数えない**。[有効化の議論](execution-control-discussion.md)に加え、既存機能の速度・コード構造を改善する余地を調べた。
+2026-09-06の調査記録。対象はneko `442b5f7`と導入済みKoota 0.6.6。変更中のecs/query・adapter・SystemAttachmentはHEADとも比較し、**中断中のTraitParticipation試作を現行機能や改善根拠へ数えない**。[有効化の議論](../../../Discussion/Prefab/entity-activation/2026-09-06_execution-control-discussion.md)に加え、既存機能の速度・コード構造を改善する余地を調べた。
 
-作業状態と候補IDの正本は[性能Audit](../fork-audit.md)。今回は調査とコピー回数確認のみ。fork・本体実装・時間比較は未実施。
+作業状態と候補IDの正本は[性能Audit](../../../audit.md)。今回は調査とコピー回数確認のみ。fork・本体実装・時間比較は未実施。
 
 ## 結論
 
@@ -24,13 +24,13 @@ Vectorと選択付きSystemの更新経路の統合には大きな余地があ�
 | KOOTA-PERF-06 | Entity削除通知とlifetime接続を明示する                   | 破棄時の間接処理を減らせる可能性           | 空Queryによる削除検出の代用を解消できる         | 中。Relation連鎖・通知順・再入の確認が必要        |
 | KOOTA-PERF-07 | 診断・projection情報の正式API                            | 性能目的では優先しない                     | $internal参照と一部型castを減らす               | 小。安定した読取APIに限定可能                     |
 
-既存PrefabのInactive TagをECSのEntity enabledへ置き換える候補は、[有効化Audit](../../../../neko-threejs/docs/Development/13-trait-participation-audit.md)のKOOTA-FORK-01で追跡し、ここへ重複登録しない。Entity APIをclassへ全面変更する案も別の設計変更で、今回の速度改善の前提にしない。
+既存PrefabのInactive TagをECSのEntity enabledへ置き換える候補は、[有効化Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_open-questions.md)のKOOTA-FORK-01で追跡し、ここへ重複登録しない。Entity APIをclassへ全面変更する案も別の設計変更で、今回の速度改善の前提にしない。
 
 ## 1. Queryのcopy：最初に比較したい具体的な問題
 
 導入版はSparseSet.dense自体が配列copyを返すのに、runQueryでさらにsliceする。さらにcommitQueryRemovalsは各反復でdenseを読み直し、縮小する除外集合を繰返しcopyする。
 
-[コピー回数の確認](../Performance/query-copy-inspection.md)では、1,000体の通常Queryで2,000要素、1,000体を除外した後の反映で501,500要素のcopyがあった。後者の要素コピー量は除外件数に対して二次的に増える。計数は実行したが実時間の改善率は未測定。
+[コピー回数の確認](../../../Performance/Query/query-copy/2026-09-06_query-copy-inspection.md)では、1,000体の通常Queryで2,000要素、1,000体を除外した後の反映で501,500要素のcopyがあった。後者の要素コピー量は除外件数に対して二次的に増える。計数は実行したが実時間の改善率は未測定。
 
 - 通常Queryは独立した結果配列を一回作ればよい候補。内部集合の生配列をそのまま返す変更にはしない。
 - 除外反映は一回取得したsnapshotを走査する候補。内部の削除時処理に再入がないことと、再追加・複数Query・追跡条件を確認する。
@@ -44,7 +44,7 @@ Vectorと選択付きSystemの更新経路の統合には大きな余地があ�
 
 fork側が正式なfilter結果や候補Entity列を受ける入口を持てれば、nekoは所属predicateだけを渡せる。CSS解析・Prefab所有関係・Asset元定義のidentityはnekoに残す。KootaへPrefab名やScene概念を移さない。
 
-速度が上がるのは二重の結果生成や走査を融合できた場合。単に現在のloopを別fileへ移すだけならコードの境界改善として評価する。[既存selector測定](../../../../neko-threejs/docs/Development/Performance/13-prefab-selection-v1.md)では、定義だけのfromは手動Tagと同程度であり、全fromを高価な汎用predicateへ置き換えない。
+速度が上がるのは二重の結果生成や走査を融合できた場合。単に現在のloopを別fileへ移すだけならコードの境界改善として評価する。[既存selector測定](../../../../../../neko-threejs/docs/Development/Performance/Query/prefab-selection/2026-09-06_prefab-selection-v1.md)では、定義だけのfromは手動Tagと同程度であり、全fromを高価な汎用predicateへ置き換えない。
 
 ## 3. Vector・objectのschemaとQuery更新の接続
 
@@ -65,9 +65,9 @@ nekoの構造化schema
 
 候補はKootaのTrait／Query計画にcodec・snapshot・更新projectionの正式な接続点を置くこと。nekoのvector/objectのschema意味論、props/Assetへの定義共有は維持し、ECSにゲーム固有schemaをハードコードしない。scalarには現在の軽い経路を残し、全Traitを一律のgetter/setterへ変換しない。
 
-[活動追加時の直近Vector測定](../../../../neko-threejs/docs/Development/Performance/12-prefab-activation-v1.md)では5,000体countのlocalがscalar6.651ms/vector21.561ms、bulkが0.293ms/8.604ms。これは改善余地を探す根拠であり、codecやKootaだけが原因だとは証明していない。
+[活動追加時の直近Vector測定](../../../../../../neko-threejs/docs/Development/Performance/Prefab/activation/2026-09-06_prefab-activation-v1.md)では5,000体countのlocalがscalar6.651ms/vector21.561ms、bulkが0.293ms/8.604ms。これは改善余地を探す根拠であり、codecやKootaだけが原因だとは証明していない。
 
-[過去の直接SoA実験](../../../../neko-threejs/docs/Development/Performance/07-direct-soa-experiment-v1.md)ではscalar bulkが0.54→7.84ms、Prefabが5.86→10.77msへ悪化し見送った。[後続実験](../../../../neko-threejs/docs/Development/Performance/08-runtime-followup-experiments-v1.md)でもlease管理へ変えて回帰を解消できなかった。再実験は「Koota内だから速い」ではなく、どの配列・view・照合を新たに省けるかを先に示す。借用失効・有限値検査・同期再入を消して速度だけ比較しない。
+[過去の直接SoA実験](../../../../../../neko-threejs/docs/Development/Performance/Query/direct-soa/2026-09-05_direct-soa-experiment-v1.md)ではscalar bulkが0.54→7.84ms、Prefabが5.86→10.77msへ悪化し見送った。[後続実験](../../../../../../neko-threejs/docs/Development/Performance/Runtime/update-cost/2026-09-05_runtime-followup-experiments-v1.md)でもlease管理へ変えて回帰を解消できなかった。再実験は「Koota内だから速い」ではなく、どの配列・view・照合を新たに省けるかを先に示す。借用失効・有限値検査・同期再入を消して速度だけ比較しない。
 
 ## 4. selected SystemとQueryの更新kernel
 

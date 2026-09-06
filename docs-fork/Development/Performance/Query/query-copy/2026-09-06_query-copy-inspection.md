@@ -72,4 +72,4 @@ for (const n of [10, 100, 1000]) {
 JS
 ```
 
-候補と次の比較は[性能Audit](../fork-audit.md)に記録する。本体・依存packageは変更していない。
+候補と次の比較は[性能Audit](../../../audit.md)に記録する。本体・依存packageは変更していない。

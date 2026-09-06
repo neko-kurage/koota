@@ -1,15 +1,17 @@
-# Koota fork Audit
+# 初回fork整備と七候補のAudit記録
+
+2026-09-06に現在状態を整理する前のsnapshot。以下の「現在」「未コミット」は当時の表現。[現在の作業](../../../audit.md)を正本とする。
 
 基準: v0.6.6 (7d1329aa82e313e715f6b7afbb8350e028c313b5)。2026-09-06。
 
-現在: feature/performance-candidatesで七候補を個別評価。01・02・07を残し、03・04・06と05のfork APIは見送り。型・source 201件・配布物178件・build・pack成功。nekoの独立checkoutでも470件のテスト・型・pack・examples/editor build成功。交互順性能比較・from追試まで完了。性能差分は本台帳更新と同じコミットへ収録。コメント規則・Better Todo Tree設定は24df52c。push・依存切替は未実施。正本は[今回の測定](Performance/candidate-evaluation-v1.md)。
+現在: feature/performance-candidatesで七候補を個別評価。01・02・07を残し、03・04・06と05のfork APIは見送り。型・source 201件・配布物178件・build・pack成功。nekoの独立checkoutでも470件のテスト・型・pack・examples/editor build成功。交互順性能比較・from追試まで完了。性能差分は本台帳更新と同じコミットへ収録。コメント規則・Better Todo Tree設定は24df52c。push・依存切替は未実施。正本は[今回の測定](../../../Performance/Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)。
 
 | ID             | 作業                | 状態 | 根拠・次の作業                                                                                                                |
 | -------------- | ------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------------- |
 | FORK-ENV-01    | Git・依存・検証環境 | 完了 | clone・branch・Git設定・baseline worktree・固定依存・verify入口を準備。型、source 196 tests、配布物173 tests、build、pack成功 |
 | FORK-REMOTE-01 | GitHub forkとorigin | 完了 | 公開fork neko-kurage/kootaを作成。SSH origin接続、main・develop・feature/fork-environmentのpush完了。環境ファイルは未コミット |
 
-手順は[fork開発環境](fork-workflow.md)。以下の環境・移管節の状態は各作業時点の記録。最新のruntime作業状態は先頭と候補表を参照する。
+手順は[fork開発環境](../../../fork-workflow.md)。以下の環境・移管節の状態は各作業時点の記録。最新のruntime作業状態は先頭と候補表を参照する。
 
 ## 環境構築の検証結果
 
@@ -27,7 +29,7 @@ GitHub fork・origin接続・branch登録は完了。環境ファイルと移管
 
 ## 現行機能の改善候補
 
-2026-09-06にnekoの性能AuditからIDと状態を維持して移管。旧FORK-PERF-01はKOOTA-PERF-01と重複していたため統合した。根拠は[調査資料](History/existing-feature-candidates.md)、測定は[Query copy](Performance/query-copy-inspection.md)。候補は実装承認ではない。Entity有効化APIとVECTOR-PERF-01は[neko側Audit](../../../neko-threejs/docs/Development/13-trait-participation-audit.md)と[性能Audit](../../../neko-threejs/docs/Development/08-runtime-performance-audit.md)で継続する。
+2026-09-06にnekoの性能AuditからIDと状態を維持して移管。旧FORK-PERF-01はKOOTA-PERF-01と重複していたため統合した。根拠は[調査資料](2026-09-06_existing-feature-candidates.md)、測定は[Query copy](../../../Performance/Query/query-copy/2026-09-06_query-copy-inspection.md)。候補は実装承認ではない。Entity有効化APIとVECTOR-PERF-01は[neko側Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_open-questions.md)と[性能Audit](../../../../../../neko-threejs/docs/Development/History/Runtime/update-cost/2026-09-06_runtime-performance-audit.md)で継続する。
 
 | ID            | 候補                                   | 状態   | 次に確認すること                                                                                     |
 | ------------- | -------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
@@ -57,7 +59,7 @@ FORK-DOCS-02：完了。ユーザー指定により独自資料をdocs-forkへ�
 
 ## 七候補の評価完了
 
-01・02・07をfeature差分に採用。03・04・06および05のfork APIは見送りで、採用sourceへ試作は残さない。[全体報告](Performance/candidate-evaluation-v1.md)と[見送り理由・再現](Performance/rejected-candidates-v1.md)を保存。nekoへの接続は独立checkoutでverify済みの[patch](History/neko-integration.patch)を保存し、元checkoutの保留中実装や依存は変更しない。nekoの性能AuditにMATCH-SYNC-01だけ追加。
+01・02・07をfeature差分に採用。03・04・06および05のfork APIは見送りで、採用sourceへ試作は残さない。[全体報告](../../../Performance/Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)と[見送り理由・再現](../../../Performance/Runtime/performance-candidates/2026-09-06_rejected-candidates-v1.md)を保存。nekoへの接続は独立checkoutでverify済みの[patch](../../Koota/fork-integration/2026-09-06_neko-integration.patch)を保存し、元checkoutの保留中実装や依存は変更しない。nekoの性能AuditにMATCH-SYNC-01だけ追加。
 
 検証: Koota source 201・配布178、neko 470テストを含むverify成功。対象単体を各5run、代表runtimeをABBA（各3round）、fromを逆順・warmup追加で追試。copy数・allocation・GC・保持heapと通知/checksumを分けて確認。差分reviewを終え、今回のコミットへ収録する。次は配布先と固定versionを決めてnekoへ導入する。新候補の実装とEntity有効化は今回の七項目に含まない。
 

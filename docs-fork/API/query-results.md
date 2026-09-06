@@ -22,4 +22,4 @@ world.destroy()
 
 標準の`Array.filter()`は変更しない。通常のQuery生成へ新しいclosureやfilter費用を加えず、必要な呼出側だけがこの関数を使う。
 
-[資料入口](../index.md) / [採否と測定](../Development/Performance/candidate-evaluation-v1.md)
+[資料入口](../00_index.md) / [採否と測定](../Development/Performance/Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)

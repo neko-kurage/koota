@@ -26,5 +26,3 @@ Read docs-fork/Development/fork-workflow.md and docs-fork/Development/audit.md b
 Fork documentation entry point: docs-fork/Development/00_index.md. Follow docs-fork/Development/development-rules.md and docs-fork/Development/History/Documentation/layout/2026-09-06_previous-audit-workflow.md. Use main, develop and feature/*; do not add develop-fork. Japanese commit messages are welcome; upstream PRs are not part of the workflow.
 
 Keep fork-owned documentation under docs-fork/, separate from upstream docs/. Use the same API, Architecture, Development and Guides categories as neko-threejs; put design history in Development/History and measurements in Development/Performance. Create categories only when they have content. Update local links when moving pages.
-
-Documentation routing: docs-fork/Development/documentation.md. Agreed but unimplemented designs remain in Development/Discussion. The audit contains outstanding work only; completed records belong in topic/date directories under History and Performance.

@@ -1,6 +1,8 @@
 # Entity・Prefab・機能の制御：議論の整理
 
-2026-09-06のneko側検討を取り込んだ参考snapshot。最新のAPI議論はneko側を正本とし、この資料の状態を更新台帳として扱わない。現行実装の基準は`442b5f7`。**現在の安定契約を変更する文書ではない。** 作業状態は[処理と機能の有効化 Audit](../../../../neko-threejs/docs/Development/13-trait-participation-audit.md)を正本とする。
+> 移設時の管理情報（2026-09-06）：合意状態：本文に合意・未決事項が混在するため、各案の記述を参照。実装状態：未実装部分を含む。現行契約の正本ではない。
+
+2026-09-06のneko側検討を取り込んだ参考snapshot。最新のAPI議論はneko側を正本とし、この資料の状態を更新台帳として扱わない。現行実装の基準は`442b5f7`。**現在の安定契約を変更する文書ではない。** 作業状態は[処理と機能の有効化 Audit](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_open-questions.md)を正本とする。
 
 ## 現時点の方向性
 
@@ -84,7 +86,7 @@ control handleは設定値と実効状態を読む入口になり得るが、そ
 2. `entity.fixedUpdate`などPrefabへ直接書いたcallback。独立したMoveという名前がなくても制御できる必要がある。
 3. Worldのselected SystemからそのPrefabのEntityを扱う経路。localとWorldで同じ対象の有効状態が矛盾しないようにする。
 
-直接書いたcallbackをPrefab定義で指定する案は[機能別制御草案](../../../../neko-threejs/docs/Development/History/15-scoped-feature-control-research.md)にあるが未確定。Prefab rootとentity callbackを同時に扱うかも含め、入口を先に固定しない。
+直接書いたcallbackをPrefab定義で指定する案は[機能別制御草案](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_scoped-feature-control-research.md)にあるが未確定。Prefab rootとentity callbackを同時に扱うかも含め、入口を先に固定しない。
 
 ## ライフサイクルとComponentの区別
 
@@ -122,7 +124,7 @@ Componentの活動をSystemの休止とどう分離するかは、現在のcallb
 
 ## ここに至る比較資料
 
-- [Tagによる更新条件の草案](../../../../neko-threejs/docs/Development/History/14-tag-update-conditions-draft.md)：Tagの初期配置・selectと所有期間・whenの分離を比較。採用保留。
-- [他エンジン調査と機能別制御案](../../../../neko-threejs/docs/Development/History/15-scoped-feature-control-research.md)：Unity、Unreal、Godot、Bevy、Phaser、Babylonの一次資料、InputとSystemの共通操作案と限界。
+- [Tagによる更新条件の草案](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_tag-update-conditions-draft.md)：Tagの初期配置・selectと所有期間・whenの分離を比較。採用保留。
+- [他エンジン調査と機能別制御案](../../../../../../neko-threejs/docs/Development/Discussion/Prefab/entity-activation/2026-09-06_scoped-feature-control-research.md)：Unity、Unreal、Godot、Bevy、Phaser、Babylonの一次資料、InputとSystemの共通操作案と限界。
 
 この整理では文書だけを更新した。中断したTrait参加切替のコードはユーザーの指示で保持しており、動作・型・性能が確認された実装として扱わない。

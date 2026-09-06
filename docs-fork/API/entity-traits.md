@@ -18,4 +18,4 @@ Tagも含む。Relationについてはtarget pairの一覧ではなく、Relatio
 
 診断のためのAPIであり、列への直接アクセスやschema projectionを公開するものではない。
 
-[資料入口](../index.md) / [採否と測定](../Development/Performance/candidate-evaluation-v1.md)
+[資料入口](../00_index.md) / [採否と測定](../Development/Performance/Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)

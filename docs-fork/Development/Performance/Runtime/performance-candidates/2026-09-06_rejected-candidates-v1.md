@@ -1,6 +1,6 @@
 # Koota fork候補03〜06の実験結果
 
-2026-09-06。Koota 0.6.6とneko 19f99b8を対象に比較した。保留中のTraitParticipation差分は含めない。実験の再現方法とfixtureは、[再現fixture](../../../benches/fork/candidate-repros/README.md)を参照する。各候補の作業状態の正本は[fork Audit](../fork-audit.md)。
+2026-09-06。Koota 0.6.6とneko 19f99b8を対象に比較した。保留中のTraitParticipation差分は含めない。実験の再現方法とfixtureは、[再現fixture](../../../../../benches/fork/candidate-repros/README.md)を参照する。各候補の作業状態の正本は[fork Audit](../../../audit.md)。
 
 **03・04・06の今回の置換案は採用しない。05はKootaの追加APIを見送り、既存の公開通知を使うneko側の別候補として残す。** 実装を移しただけの整理や、契約を変えた比較を性能改善として数えない。
 
