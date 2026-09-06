@@ -1,3 +1,4 @@
+import { clearEntityActivation } from './entity-activation';
 import { $internal } from '../common';
 import { getEntitiesWithRelationTo, getRelationTargets } from '../relation/relation';
 import { addTrait, cleanupRelationTarget, removeTrait } from '../trait/trait';
@@ -93,10 +94,14 @@ export function destroyEntity(world: World, entity: Entity) {
 
         // Free the entity.
         releaseEntity(ctx.entityIndex, currentEntity);
+        clearEntityActivation(world, currentEntity);
 
         // Remove the entity from the all query.
         const allQuery = ctx.queriesHashMap.get('');
         if (allQuery) allQuery.remove(world, currentEntity);
+        // FORK(Prefab/entity-activation): IncludeDisabledだけの集合も、Traitが空の削除を受け取る。
+        const allDisabledQuery = ctx.queriesHashMap.get('-1');
+        if (allDisabledQuery) allDisabledQuery.remove(world, currentEntity);
 
         // Remove all entity state from world.
         ctx.entityTraits.delete(currentEntity);

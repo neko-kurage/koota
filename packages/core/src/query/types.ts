@@ -141,6 +141,7 @@ export type TrackingGroup = {
 
 export type QueryInstance<T extends QueryParameter[] = QueryParameter[]> = {
     version: number;
+    includeDisabled: boolean;
     world: World;
     parameters: T;
     hash: QueryHash;

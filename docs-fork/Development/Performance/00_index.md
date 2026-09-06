@@ -9,3 +9,7 @@
 
 - [Koota既存機能候補の個別評価 v1](Runtime/performance-candidates/2026-09-06_candidate-evaluation-v1.md)
 - [Koota fork候補03〜06の実験結果](Runtime/performance-candidates/2026-09-06_rejected-candidates-v1.md)
+
+## Prefab/entity-activation
+
+- [Entity有効化の更新費用](Prefab/entity-activation/2026-09-06_measurements.md)

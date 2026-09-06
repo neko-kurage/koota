@@ -80,3 +80,9 @@ export type { TraitInstance } from './trait/types';
 
 /** @deprecated Will remove this internal type entirely */
 export type { QueryInstance } from './query/types';
+
+export { IncludeDisabled } from './query/modifiers/include-disabled';
+export { IsDisabled } from './query/query';
+export { bindEntityActivation, setEntityEnabledGate } from './entity/entity-activation';
+export type { EntityActivationBinding } from './entity/entity-activation';
+export { setEntitiesEnabledGate } from './entity/entity-activation';

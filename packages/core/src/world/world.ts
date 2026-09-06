@@ -2,7 +2,7 @@ import { $internal } from '../common';
 import { createEntity, destroyEntity } from '../entity/entity';
 import type { Entity } from '../entity/types';
 import { createEntityIndex, getAliveEntities, isEntityAlive } from '../entity/utils/entity-index';
-import { IsExcluded, createQuery, createQueryInstance } from '../query/query';
+import { IsDisabled, IsExcluded, createQuery, createQueryInstance } from '../query/query';
 import { createRelationOnlyQueryResult } from '../query/query-result';
 import type { Query, QueryInstance, QueryParameter, QueryUnsubscriber } from '../query/types';
 import { createQueryHash } from '../query/utils/create-query-hash';
@@ -112,6 +112,8 @@ export function createWorld(
             // Register system traits.
             if (!hasTraitInstance(ctx.traitInstances, IsExcluded)) registerTrait(world, IsExcluded);
 
+            if (!hasTraitInstance(ctx.traitInstances, IsDisabled)) registerTrait(world, IsDisabled);
+
             // Check for traits passed into lazy init
             if (lazyTraits) {
                 initTraits = lazyTraits;
@@ -200,6 +202,7 @@ export function createWorld(
             ctx.trackedTraits.clear();
 
             // Create new world entity.
+            registerTrait(world, IsDisabled);
             ctx.worldEntity = createEntity(world, IsExcluded);
 
             for (const sub of ctx.resetSubscriptions) {

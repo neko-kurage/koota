@@ -1,3 +1,4 @@
+import { notifyQuery, internalSubscription } from './activation-notifications';
 import { SparseSet } from '@koota/collections';
 import { $internal } from '../common';
 import type { Entity } from '../entity/types';
@@ -31,6 +32,8 @@ import { createQueryHash } from './utils/create-query-hash';
 import { isQuery } from './utils/is-query';
 
 export const IsExcluded: TagTrait = trait();
+// FORK(Prefab/entity-activation): 値を消さずQuery参加だけを止める内部tag。
+export const IsDisabled: TagTrait = trait();
 
 function resolveRelationFilter(filter: ResolvedRelationFilter): ResolvedRelationFilter {
     if (!filter.targetQuery) return filter;
@@ -77,7 +80,7 @@ export function addEntityToQuery(query: QueryInstance, entity: Entity) {
 
     // Notify subscriptions.
     for (const sub of query.addSubscriptions) {
-        sub(entity);
+        notifyQuery(query.world, sub, entity);
     }
 
     query.version++;
@@ -93,7 +96,7 @@ export function removeEntityFromQuery(world: World, query: QueryInstance, entity
 
     // Notify subscriptions.
     for (const sub of query.removeSubscriptions) {
-        sub(entity);
+        notifyQuery(query.world, sub, entity);
     }
 
     query.version++;
@@ -193,6 +196,7 @@ export function createQueryInstance<T extends QueryParameter[]>(
 ): QueryInstance {
     const query: QueryInstance = {
         version: 0,
+        includeDisabled: parameters.some((p) => isModifier(p) && p.type === 'include-disabled'),
         world,
         parameters,
         hash: '',
@@ -299,6 +303,11 @@ export function createQueryInstance<T extends QueryParameter[]>(
         }
     }
 
+    if (!query.includeDisabled) {
+        if (!hasTraitInstance(ctx.traitInstances, IsDisabled)) registerTrait(world, IsDisabled);
+        query.traitInstances.forbidden.push(getTraitInstance(ctx.traitInstances, IsDisabled)!);
+    }
+
     // Add IsExcluded to the forbidden list
     query.traitInstances.forbidden.push(getTraitInstance(ctx.traitInstances, IsExcluded)!);
 
@@ -391,16 +400,22 @@ export function createQueryInstance<T extends QueryParameter[]>(
                 };
 
                 query.cleanup.push(
-                    world.onQueryAdd(pair.targetQueryRef, (target) => {
-                        pair.targetQueryMatches!.add(target);
-                        refreshSourcesForTarget(target);
-                    })
+                    world.onQueryAdd(
+                        pair.targetQueryRef,
+                        internalSubscription((target) => {
+                            pair.targetQueryMatches!.add(target);
+                            refreshSourcesForTarget(target);
+                        })
+                    )
                 );
                 query.cleanup.push(
-                    world.onQueryRemove(pair.targetQueryRef, (target) => {
-                        pair.targetQueryMatches!.remove(target);
-                        refreshSourcesForTarget(target);
-                    })
+                    world.onQueryRemove(
+                        pair.targetQueryRef,
+                        internalSubscription((target) => {
+                            pair.targetQueryMatches!.remove(target);
+                            refreshSourcesForTarget(target);
+                        })
+                    )
                 );
             }
         }
@@ -472,7 +487,7 @@ export function createQueryInstance<T extends QueryParameter[]>(
                     if (logic === 'or' && matches) break;
                 }
 
-                if (matches) {
+                if (matches && (query.includeDisabled || !entity.has(IsDisabled))) {
                     if (hasRelationFilters) {
                         let relationMatch = true;
                         for (const pair of query.relationFilters!) {

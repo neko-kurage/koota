@@ -25,4 +25,7 @@ export type Entity = number & {
     id: () => number;
     generation: () => number;
     isAlive: () => boolean;
+    setEnabled: (enabled: boolean) => void;
+    isEnabled: () => boolean;
+    isActive: () => boolean;
 };

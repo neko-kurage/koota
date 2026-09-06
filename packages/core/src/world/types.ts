@@ -28,6 +28,7 @@ export type WorldOptions = {
 export type WorldInternal = {
     entityIndex: ReturnType<typeof createEntityIndex>;
     entityMasks: number[][];
+    activationNotifications?: [import('../query/types').QuerySubscriber, Entity][];
     entityTraits: Map<number, Set<Trait>>;
     bitflag: number;
     traitInstances: (TraitInstance | undefined)[];

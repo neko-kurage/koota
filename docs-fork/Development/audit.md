@@ -2,17 +2,17 @@
 
 ## 次に進める順番
 
-1. Prefab/entity-activation：元の目的であるEntity有効化について、利用側の必要契約を受けてKootaに置く最小範囲を決める。設計が閉じる前にTrait別切替まで広げない。
-2. 独立したfeatureで契約・未使用時・更新・切替時の費用を比較する。既存の七候補をやり直す必要はない。
-3. Koota/branch-integrationとKoota/distribution：採用変更を統合・CI確認し、固定した配布物を用意する。今回の七候補だけを先に配布するか、有効化の変更を含めるかもそこで決める。
+1. Prefab/entity-activation：実装と機能・配布検証は完了。2026-09-06にユーザーが追加費用を許容し、性能面の保留を解除。読取名はisEnabled/isActiveを維持することで合意。snapshot契約の確認を残す。
+2. Koota/branch-integration：採用判断後にfeatureを統合し、明示branchのremote反映とCI確認を行う。
+3. Koota/distribution：neko用の固定tgz検証は実施した。正式source commit・version・配布先を決定する。公開済みversionを上書きしない。
 
-この一覧は実装・merge・push・publishの新たな実行承認ではない。設計・配布の未決事項を確定してから進める。
+merge・push・publishの承認を兼ねない。
 
 ## 残作業
 
 | ID                | 作業                                      | 状態                   | 次に決める・確認すること                                                                                                                          |
 | ----------------- | ----------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Prefab/entity-activation    | Entity有効状態とQueryへの最小接続         | 候補（契約待ち）       | Entity操作の入口、値保持、Query一致・通知、世代再利用、休止/再開の費用。Prefab親子やComponent休止はKootaへ持ち込まない                            |
+| [Prefab/entity-activation](Discussion/Prefab/entity-activation/2026-09-06_implementation.md) | Entity有効状態とQueryの採用判断 | 性能費用・現行命名は承認済み | 走査契約の確認を残す |
 | [Koota/branch-integration](Discussion/Koota/branch-integration/2026-09-06_scope.md) | 検証済みfeatureの統合とremote反映         | 未着手                 | developへ反映する範囲を決め、明示branchをpushしCI確認。既存ローカルverify成功をCI成功とみなさない                                                 |
 | Koota/distribution  | 不変な配布物の作成・公開方法              | 候補（配布方式未確定） | package名/alias、配布先、独自version、source revision・integrityの対応を決める。公式0.6.6を上書きしない                                           |
 | Entity/reentrant-destroy      | destroy通知への再入でRelation連鎖が欠ける | 候補                   | 親のremove購読で別Entityをdestroyすると子が残る。共有queue/set、通知順・重複・連鎖を保つ修正を別件で検討。利用側の遅延cleanupを現行バグ扱いしない |

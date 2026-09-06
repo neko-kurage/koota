@@ -1,3 +1,5 @@
+import { getTraitInstance } from '../trait/trait-instance';
+import { IsDisabled } from './query';
 import { $internal } from '../common';
 import type { Entity } from '../entity/types';
 import { getEntityId } from '../entity/utils/pack-entity';
@@ -25,6 +27,11 @@ export function createQueryResult<T extends QueryParameter[]>(
     query: QueryInstance,
     params: QueryParameter[]
 ): QueryResult<T> {
+    // FORK(Prefab/entity-activation): 走査中の休止は既存maskを直接確認する。
+    // Entity.has経由で毎個体のWorldを解決すると通常更新が約45%悪化したため避ける。
+    const disabled = getTraitInstance(world[$internal].traitInstances, IsDisabled)!;
+    const disabledMask = world[$internal].entityMasks[disabled.generationId];
+    const disabledBit = query.includeDisabled ? 0 : disabled.bitflag;
     const traits: Trait[] = [];
     const stores: Store<any>[] = [];
 
@@ -38,7 +45,9 @@ export function createQueryResult<T extends QueryParameter[]>(
 
             for (let i = 0; i < entities.length; i++) {
                 const entity = entities[i];
+
                 const eid = getEntityId(entity);
+                if ((disabledMask[eid] & disabledBit) !== 0) continue;
 
                 // Create snapshots without atomic tracking
                 createSnapshots(eid, traits, stores, state);
@@ -66,7 +75,9 @@ export function createQueryResult<T extends QueryParameter[]>(
 
                 for (let i = 0; i < entities.length; i++) {
                     const entity = entities[i];
+
                     const eid = getEntityId(entity);
+                    if ((disabledMask[eid] & disabledBit) !== 0) continue;
 
                     createSnapshotsWithAtomic(eid, traits, stores, state, atomicSnapshots);
                     callback(state as unknown as InstancesFromParameters<T>, entity, i);
@@ -117,7 +128,9 @@ export function createQueryResult<T extends QueryParameter[]>(
 
                 for (let i = 0; i < entities.length; i++) {
                     const entity = entities[i];
+
                     const eid = getEntityId(entity);
+                    if ((disabledMask[eid] & disabledBit) !== 0) continue;
 
                     createSnapshotsWithAtomic(eid, traits, stores, state, atomicSnapshots);
                     callback(state as unknown as InstancesFromParameters<T>, entity, i);
@@ -154,7 +167,9 @@ export function createQueryResult<T extends QueryParameter[]>(
             } else if (options.changeDetection === 'never') {
                 for (let i = 0; i < entities.length; i++) {
                     const entity = entities[i];
+
                     const eid = getEntityId(entity);
+                    if ((disabledMask[eid] & disabledBit) !== 0) continue;
                     createSnapshots(eid, traits, stores, state);
                     callback(state as unknown as InstancesFromParameters<T>, entity, i);
 

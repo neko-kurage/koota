@@ -1,3 +1,4 @@
+import { setEntityEnabled, isEntityEnabled, isEntityActive } from './entity-activation';
 // Add methods to the Number prototype so it can be used as an entity.
 // This lets us keep the performance of raw numbers over using objects
 // and the convenience of using methods. Type guards are used to ensure
@@ -82,4 +83,18 @@ Number.prototype.isAlive = function (this: Entity) {
     const world = getEntityWorld(this);
     const entityIndex = world[$internal].entityIndex;
     return isEntityAlive(entityIndex, this);
+};
+
+// FORK(Prefab/entity-activation): 数値Entityの既存操作と同じ入口を使う。
+// @ts-expect-error
+Number.prototype.setEnabled = function (this: Entity, enabled: boolean) {
+    setEntityEnabled(this, enabled);
+};
+// @ts-expect-error
+Number.prototype.isEnabled = function (this: Entity) {
+    return isEntityEnabled(this);
+};
+// @ts-expect-error
+Number.prototype.isActive = function (this: Entity) {
+    return isEntityActive(this);
 };

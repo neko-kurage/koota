@@ -17,3 +17,7 @@
 ## Prefab/entity-activation
 
 - [Entity・Prefab・機能の制御：議論の整理](Prefab/entity-activation/2026-09-06_execution-control-discussion.md)
+
+## Prefab/entity-activation
+
+- [Entity有効化の実装と採用条件](Prefab/entity-activation/2026-09-06_implementation.md)

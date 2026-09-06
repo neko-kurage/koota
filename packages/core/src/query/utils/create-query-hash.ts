@@ -55,6 +55,10 @@ export const createQueryHash = (parameters: QueryParameter[]): QueryHash => {
         }
 
         if (isModifier(param)) {
+            if (param.type === 'include-disabled') {
+                sortBuf[cursor++] = -1;
+                continue;
+            }
             for (let j = 0; j < param.traitIds.length; j++) {
                 sortBuf[cursor++] = param.id * MODIFIER_FACTOR + param.traitIds[j];
             }
