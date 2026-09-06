@@ -1,6 +1,6 @@
 # Koota forkの上流追従方針
 
-2026-09-06。neko `442b5f7`、Koota 0.6.6から開始するforkの採用方針。公開forkと環境は準備済み。nekoの依存切替・性能改善は未実施。状態は[fork Audit](fork-audit.md)、手順は[開発環境](fork-workflow.md)、候補は[調査資料](History/existing-feature-candidates.md)を参照する。
+2026-09-06。neko `442b5f7`、Koota 0.6.6から開始するforkの採用方針。公開forkと環境は準備済み。個別性能実験は実施済み、nekoの依存切替は未実施。状態は[fork Audit](fork-audit.md)、手順は[開発環境](fork-workflow.md)、候補は[調査資料](History/existing-feature-candidates.md)を参照する。
 
 ## 基本方針
 
@@ -64,8 +64,8 @@ upstream remoteは公式repository、originはforkとする。上流のrelease t
 
 劣化を解消できなければ上流更新を保留する。必要な修正だけ独立して取り込める場合はbackportし、それ自体を検証する。最新化を理由に受入条件を緩めない。
 
-## 最初に試す範囲
+## 個別実験の記録
 
-最初は[Queryのcopy調査](Performance/query-copy-inspection.md)のKOOTA-PERF-01を一つの変更として比較すると、forkのbuild・配布・測定手順まで小さく確認できる。コピー回数は確認済みだが時間改善は未測定なので、採用はまだ決めない。
+初回は[Queryのcopy調査](Performance/query-copy-inspection.md)から始め、七候補を一つずつ比較した。採否・検証範囲・再開条件は[性能実験](Performance/candidate-evaluation-v1.md)と[Audit](fork-audit.md)を正本とする。新しい候補や上流更新でも、一括変更する前に独立した比較を行う。
 
-forkはneko-kurage/kootaに作成済み。package配布先と初回の実装対象は別途確定する。Entity有効化・schema接続・更新kernel統合を初回からまとめて変更しない。
+forkはneko-kurage/koota。package配布先と固定versionは導入時に決める。Entity有効化の契約変更と、既存機能の最適化を混ぜない。

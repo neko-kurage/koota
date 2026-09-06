@@ -529,3 +529,37 @@ describe('Query', () => {
         expect(resultsAfter.length).toBe(resultsBefore.length);
     });
 });
+
+describe('query snapshot and deferred removals', () => {
+    it('keeps returned snapshots independent of later queries and caller sorting', () => {
+        const world = createWorld();
+        try {
+            const first = world.spawn(Position);
+            const second = world.spawn(Position);
+            const snapshot = world.query(Position);
+            snapshot.sort((a, b) => b.id() - a.id());
+            expect([...world.query(Position)]).toEqual([first, second]);
+            first.remove(Position);
+            expect([...world.query(Position)]).toEqual([second]);
+            expect([...snapshot]).toEqual([second, first]);
+        } finally {
+            world.destroy();
+        }
+    });
+
+    it('cancels pending removal on re-add and commits removals across multiple queries', () => {
+        const world = createWorld();
+        try {
+            const entities = Array.from({ length: 128 }, () => world.spawn(Position, IsActive));
+            world.query(Position);
+            world.query(Position, IsActive);
+            for (const entity of entities) entity.remove(Position);
+            entities[17].add(Position);
+            expect([...world.query(Position)]).toEqual([entities[17]]);
+            expect([...world.query(Position, IsActive)]).toEqual([entities[17]]);
+            expect(world.query(IsActive)).toHaveLength(128);
+        } finally {
+            world.destroy();
+        }
+    });
+});

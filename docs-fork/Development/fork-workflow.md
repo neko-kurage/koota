@@ -4,12 +4,12 @@
 
 - upstream: pmndrs/koota。公式上流はupstream/mainで追跡する。
 - main: 検証済みの安定版。初期値はv0.6.6。
-- develop: 開発統合branch。初期値はv0.6.6。
-- feature/fork-environment: 環境整備の作業branch。
+- develop: 開発統合branch。現在は環境整備dd1f53d。
+- feature/performance-candidates: 既存機能七候補の個別実験branch。
 - origin: git@github.com:neko-kurage/koota.git。公開forkへ接続済み。
 - Node: .node-version、pnpm: package.jsonのpackageManagerに固定する。
 
-neko-threejsの作業ルール・Audit・一括検証という構成を参考にする。上流のsource配置、pnpm workspace、formatterとbuildは維持する。runtimeの変更はまだない。
+neko-threejsの作業ルール・Audit・一括検証という構成を参考にする。上流のsource配置、pnpm workspace、formatterとbuildは維持する。runtime候補の採否と検証は[Audit](fork-audit.md)を参照する。
 
 ## 作業開始
 
@@ -26,7 +26,7 @@ main・develop・feature/\*を使い、develop-forkは追加しない。上流�
 
 repository内だけrerere.enabled=true、rerere.autoupdate=false、pull.ff=only、push.default=simpleを設定済み。upstreamへのpushとmainからの既定pushは無効な送り先にしている。global設定は変更しない。
 
-作業branchを明示してoriginへpushする。mainとdevelopは導入中のv0.6.6を基準とする。mainへは検証済みのdevelopを反映する。
+作業branchを明示してoriginへpushする。mainとdevelopは導入中のv0.6.6を基準にした履歴を持つ。mainへは検証済みのdevelopを反映する。
 
 更新時はupstreamをfetchし、developからfeature/配下に検証branchを作って対象releaseをmergeする。競合解消はrerereによるものもreviewする。検証後にのみdevelopへ反映し、公開済み履歴・tagを書き換えない。
 

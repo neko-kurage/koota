@@ -55,7 +55,8 @@ export function runQuery<T extends QueryParameter[]>(
 
     // With hybrid bitmask strategy, query.entities is already incrementally maintained
     // with both trait and relation filters applied. Just return the pre-filtered entities.
-    const entities = query.entities.dense.slice() as Entity[];
+    // FORK(KOOTA-PERF-01): dense自体が独立snapshotを返すため、二重のcopyを省く。
+    const entities = query.entities.dense as Entity[];
 
     // Clear so it can accumulate again.
     if (query.isTracking) {
@@ -103,8 +104,11 @@ export function commitQueryRemovals(world: World) {
     if (!ctx.dirtyQueries.size) return;
 
     for (const query of ctx.dirtyQueries) {
-        for (let i = query.toRemove.dense.length - 1; i >= 0; i--) {
-            const eid = query.toRemove.dense[i];
+        // FORK(KOOTA-PERF-01): denseの取得ごとにcopyされるため、除外前に一度だけ取得する。
+        // SparseSet.removeはcallbackを呼ばないので、逆順snapshotでも除外順は変わらない。
+        const removals = query.toRemove.dense;
+        for (let i = removals.length - 1; i >= 0; i--) {
+            const eid = removals[i];
             query.toRemove.remove(eid);
             query.entities.remove(eid);
         }

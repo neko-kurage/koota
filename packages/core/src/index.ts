@@ -1,6 +1,7 @@
 export { createActions } from './actions/create-actions';
 export type { Actions, ActionsInitializer, ActionRecord } from './actions/types';
 export { $internal } from './common';
+export { getEntityTraits } from './entity/get-entity-traits';
 export type { Entity } from './entity/types';
 export { unpackEntity } from './entity/utils/pack-entity';
 export { shallowEqual } from './utils/shallow-equal';
@@ -11,6 +12,7 @@ export { Or } from './query/modifiers/or';
 export { createRemoved } from './query/modifiers/removed';
 export { $modifier } from './query/modifier';
 export { createQuery, IsExcluded } from './query/query';
+export { retainQueryResult } from './query/retain-query-result';
 export type {
     EventType,
     InstancesFromParameters,

@@ -1,0 +1,43 @@
+import { $internal } from '../common';
+import type { Entity } from '../entity/types';
+import { getEntityId } from '../entity/utils/pack-entity';
+import type { World } from '../world';
+import { getStore, getTrait, hasTrait } from './trait';
+import type { Trait } from './types';
+
+export interface TraitCodec {
+    encode(value: unknown): Record<string, unknown>;
+    decode(record: Record<string, unknown>): void;
+}
+
+const columnReaders = new WeakMap<Trait, Trait[typeof $internal]['get']>();
+
+/** 生成済みの列書込み処理を維持し、構造化した入力とsnapshotの変換を接続する。 */
+export function setTraitCodec(trait: Trait, codec: TraitCodec): void {
+    const ctx = trait[$internal];
+    if (ctx.type !== 'soa') throw new Error('Trait codecs require SoA storage.');
+    if (columnReaders.has(trait)) throw new Error('A trait codec is already installed.');
+
+    const { get, set } = ctx;
+    const { encode, decode } = codec;
+    columnReaders.set(trait, get);
+
+    // 指定されたTraitだけに接続する。通常のTraitは生成済み関数を維持し、
+    // Entityの操作ごとにcodecの判定を追加しない。
+    ctx.set = (index, store, value) => set(index, store, encode(value));
+    ctx.get = (index, store) => {
+        const record = get(index, store);
+        decode(record);
+        return record;
+    };
+}
+
+/** 装飾前のsnapshotを読む。EntityまたはTraitがなければundefinedを返す。 */
+export function getTraitColumns(world: World, entity: Entity, trait: Trait) {
+    if (!world.has(entity)) return undefined;
+    const get = columnReaders.get(trait);
+    if (get !== undefined && !hasTrait(world, entity, trait)) return undefined;
+    return get === undefined
+        ? getTrait(world, entity, trait)
+        : get(getEntityId(entity), getStore(world, trait));
+}

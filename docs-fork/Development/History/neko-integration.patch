@@ -1,0 +1,107 @@
+diff --git a/src/ecs/koota-adapter.ts b/src/ecs/koota-adapter.ts
+index d21e0ba..15ec434 100644
+--- a/src/ecs/koota-adapter.ts
++++ b/src/ecs/koota-adapter.ts
+@@ -13,21 +13,6 @@ function isDataTrait(trait: Koota.Trait): boolean {
+ export class KootaAdapter {
+   private constructor() {}
+
+-  /** Kootaのresult配列を絞り、select/readEach/updateEachも同じ対象へ揃える。 */
+-  public static filterResult<T>(values: readonly T[], predicate: (value: T) => boolean): void {
+-    const result = values as T[];
+-    let count = 0;
+-
+-    for (const value of result) if (predicate(value)) result[count++] = value;
+-
+-    result.length = count;
+-  }
+-
+-  public static readEntityTraits(world: Koota.World, entity: Koota.Entity): readonly Koota.Trait[] {
+-    // keyはslot番号ではなくgenerationとWorldを含むEntity。Set自体を公開しない。
+-    return [...(world[Koota.$internal].entityTraits.get(entity) ?? [])];
+-  }
+-
+   /** Kootaの変更検知は維持し、入力とsnapshotの変換だけを接続する。 */
+   public static installTraitCodec(
+     trait: Koota.Trait,
+diff --git a/src/ecs/query.ts b/src/ecs/query.ts
+index 2e0c5a8..1aa99af 100644
+--- a/src/ecs/query.ts
++++ b/src/ecs/query.ts
+@@ -28,12 +28,15 @@ export class EcsQuery {
+       ...selected,
+       ...(from === undefined ? [] : PrefabMembership.parameters(ecs, from)),
+       ...(includeInactive ? [] : [Koota.Not(Inactive)]),
+-    ) as QueryResult<T>;
++    ) as Koota.QueryResult<Koota.QueryParameter[]>;
+
+     if (from !== undefined && !isPrefabDefinition(from))
+-      KootaAdapter.filterResult(result, PrefabMembership.predicate(ecs, from));
++      Koota.retainQueryResult(
++        result,
++        PrefabMembership.predicate(ecs, from) as (entity: Koota.Entity) => boolean,
++      );
+
+-    return addDrafts(result, selected);
++    return addDrafts(result as unknown as QueryResult<T>, selected);
+   }
+ }
+
+diff --git a/src/world/world.ts b/src/world/world.ts
+index 58d557a..fd163cf 100644
+--- a/src/world/world.ts
++++ b/src/world/world.ts
+@@ -1,7 +1,6 @@
+ import { PrefabMembership } from '../prefab/membership';
+ import { ActivityOwner } from '../lifetime/activity';
+ import * as Koota from 'koota';
+-import { KootaAdapter } from '../ecs/koota-adapter';
+ import { EcsQuery } from '../ecs/query';
+ import * as Time from '../time';
+ import * as Component from '../component/internal';
+@@ -159,7 +158,7 @@ export class World {
+       }),
+       readSchedule: () => this.schedule,
+       readPrefabs: () => this.prefabRuntime.diagnostics(),
+-      readTraits: (entity) => KootaAdapter.readEntityTraits(this.ecs, entity as Koota.Entity),
++      readTraits: (entity) => Koota.getEntityTraits(this.ecs, entity as Koota.Entity),
+       readScopes: () => this.lifetime.diagnostics(),
+     });
+   }
+diff --git a/tests/core/koota-compat.test.ts b/tests/core/koota-compat.test.ts
+index e87f7f3..b287544 100644
+--- a/tests/core/koota-compat.test.ts
++++ b/tests/core/koota-compat.test.ts
+@@ -2,32 +2,6 @@ import { expect, it } from 'vite-plus/test';
+ import * as Koota from 'koota';
+ import { KootaAdapter } from '../../src/ecs/koota-adapter';
+
+-it('reads detached Trait lists by full Entity identity across removal and slot reuse', () => {
+-  const world = Koota.createWorld();
+-  const other = Koota.createWorld();
+-  const A = Koota.trait({ value: 0 });
+-  const B = Koota.trait();
+-  try {
+-    const entity = world.spawn(B, A);
+-    const snapshot = KootaAdapter.readEntityTraits(world, entity);
+-    expect(snapshot).toEqual([B, A]);
+-    entity.remove(B);
+-    entity.add(B);
+-    expect(KootaAdapter.readEntityTraits(world, entity)).toEqual([A, B]);
+-    expect(snapshot).toEqual([B, A]);
+-    expect(KootaAdapter.readEntityTraits(world, other.spawn(A))).toEqual([]);
+-    entity.destroy();
+-    const replacement = world.spawn(B);
+-    expect(replacement.id()).toBe(entity.id());
+-    expect(replacement.generation()).not.toBe(entity.generation());
+-    expect(KootaAdapter.readEntityTraits(world, entity)).toEqual([]);
+-    expect(KootaAdapter.readEntityTraits(world, replacement)).toEqual([B]);
+-  } finally {
+-    world.destroy();
+-    other.destroy();
+-  }
+-});
+-
+ it('aligns data Trait order with Koota query tuples including Tags, Not and Relations', () => {
+   const world = Koota.createWorld();
+   const A = Koota.trait({ value: 1 });
