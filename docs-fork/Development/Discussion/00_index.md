@@ -13,7 +13,3 @@
 ## Koota/distribution
 
 - [Koota/distribution](Koota/distribution/2026-09-06_scope.md)
-
-## Query/initial-population
-
-- [初回Queryへの破棄済みEntity混入](Query/initial-population/2026-09-06-scope.md)

@@ -21,3 +21,8 @@
 ## Entity/reentrant-destroy
 
 - [削除再入の修正](Entity/reentrant-destroy/2026-09-06-fix.md)
+
+## Query/initial-population
+
+- [初回Query不具合の着手記録](Query/initial-population/2026-09-06-scope.md)
+- [修正と検証](Query/initial-population/2026-09-06-fix.md)

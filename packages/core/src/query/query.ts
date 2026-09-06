@@ -421,7 +421,9 @@ export function createQueryInstance<T extends QueryParameter[]>(
         }
     }
 
-    // Populate query with initial matching entities
+    // FORK(Query/initial-population): denseの末尾には再利用待ちの破棄済みslotが残る。
+    // 初期集合は生存範囲だけを読み、個体ごとのhas判定や配列copyを増やさない。
+    const { dense: entities, aliveCount } = ctx.entityIndex;
     if (query.trackingGroups.length > 0) {
         // For tracking queries, check each entity against tracking groups
         for (const group of query.trackingGroups) {
@@ -430,7 +432,8 @@ export function createQueryInstance<T extends QueryParameter[]>(
             const dirtyMask = ctx.dirtyMasks.get(id)!;
             const changedMask = ctx.changedMasks.get(id)!;
 
-            for (const entity of ctx.entityIndex.dense) {
+            for (let i = 0; i < aliveCount; i++) {
+                const entity = entities[i];
                 // For AND groups, skip if already in query (will be checked by other groups)
                 // For OR groups, skip if already in query
                 if (query.entities.has(entity)) continue;
@@ -505,8 +508,7 @@ export function createQueryInstance<T extends QueryParameter[]>(
         }
     } else {
         // Non-tracking query: populate immediately
-        const entities = ctx.entityIndex.dense;
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i < aliveCount; i++) {
             const entity = entities[i];
             const match = hasRelationFilters
                 ? checkQueryWithRelations(world, query, entity)

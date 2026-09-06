@@ -16,3 +16,5 @@ neko-threejsと同じ分類を使う。
 現行の[Entity有効状態とQuery参加](Architecture/Structure/Entity/01-activation.md)はArchitectureに記録する。
 
 Entityの[削除と再入](Architecture/Structure/Entity/02-destruction.md)もArchitectureを正本とする。
+
+[Queryの初期集合](Architecture/Structure/Query/01-initial-population.md)も現行契約として記録する。

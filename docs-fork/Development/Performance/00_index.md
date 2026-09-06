@@ -17,3 +17,7 @@
 ## Entity/reentrant-destroy
 
 - [通常の削除経路比較](Entity/reentrant-destroy/2026-09-06-measurements.md)
+
+## Query/initial-population
+
+- [初回Query生成の比較](Query/initial-population/2026-09-06-measurements.md)

@@ -13,4 +13,4 @@ emptyとscalarは5,000体の個別destroy、cascadeは一つの親と5,000体の
 
 p50はempty約0.52〜0.54ms、scalar約1.09〜1.12ms、cascade約3.66〜3.78ms。scalarの2回平均は約1.1％高いが、個別測定の範囲が重なり、他のケースは低い。今回の測定では大きな通常経路の劣化は見られない。p99は揺れるので高速化の断定はしない。queueのcopy、新しい呼出し別array/Setは追加せず、共有配列の開始位置と呼出し深さだけを追加した。heap/GCの独立測定は行っていない。
 
-[生結果](2026-09-06-results.json)と[再実行script](../../../../../benches/fork/reentrant-destroy/benchmark.mjs)を保存する。第一引数に測定する配布moduleの絶対pathを渡す。正しさの確認にはworld.entitiesを用いる。削除後に初めて空Queryを作る別件は[Query/initial-population](../../../Discussion/Query/initial-population/2026-09-06-scope.md)へ分離した。
+[生結果](2026-09-06-results.json)と[再実行script](../../../../../benches/fork/reentrant-destroy/benchmark.mjs)を保存する。第一引数に測定する配布moduleの絶対pathを渡す。正しさの確認にはworld.entitiesを用いる。削除後に初めて空Queryを作る別件は[Query/initial-population](../../../History/Query/initial-population/2026-09-06-scope.md)へ分離した。
