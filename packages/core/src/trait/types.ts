@@ -24,6 +24,7 @@ export type Trait<TSchema extends Schema = any> = {
             value: TraitValue<TSchema>
         ) => boolean;
         get: (index: number, store: any) => TraitRecord<TSchema>;
+        getUpdate: (index: number, store: any) => TraitRecord<TSchema>;
         id: number;
         createStore: () => Store<TSchema>;
         /** Reference to parent relation if this trait is owned by a relation */

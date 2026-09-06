@@ -170,7 +170,7 @@ export function createQueryResult<T extends QueryParameter[]>(
 
                     const eid = getEntityId(entity);
                     if ((disabledMask[eid] & disabledBit) !== 0) continue;
-                    createSnapshots(eid, traits, stores, state);
+                    createUpdateSnapshots(eid, traits, stores, state);
                     callback(state as unknown as InstancesFromParameters<T>, entity, i);
 
                     // Skip if the entity has been destroyed.
@@ -242,6 +242,18 @@ export function createQueryResult<T extends QueryParameter[]>(
     }
 }
 
+// FORK(Query/update-reader): readEachのsnapshotとupdateEachの編集copyを分ける。
+/* @inline */ function createUpdateSnapshots(
+    entityId: number,
+    traits: Trait[],
+    stores: Store<any>[],
+    state: any[]
+) {
+    for (let i = 0; i < traits.length; i++) {
+        state[i] = traits[i][$internal].getUpdate(entityId, stores[i]);
+    }
+}
+
 /* @inline */ function createSnapshotsWithAtomic(
     entityId: number,
     traits: Trait[],
@@ -252,7 +264,7 @@ export function createQueryResult<T extends QueryParameter[]>(
     for (let j = 0; j < traits.length; j++) {
         const trait = traits[j];
         const ctx = trait[$internal];
-        const value = ctx.get(entityId, stores[j]);
+        const value = ctx.getUpdate(entityId, stores[j]);
         state[j] = value;
         atomicSnapshots[j] = ctx.type === 'aos' ? { ...value } : null;
     }

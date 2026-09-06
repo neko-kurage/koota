@@ -1,0 +1,13 @@
+# 更新用readerの分離
+
+nekoの構造化Traitはgetをsnapshot用に装飾するため、updateEachでもsnapshot用propertyを生成した後に別のborrowed viewを生成していた。通常のgetを一時的に差し替える方式は再入した読取りへ漏れるため採用しない。
+
+Traitの内部readerとしてgetUpdateを追加し、生成時にはgetと同じ関数を保持する。updateEachのauto/always/neverだけがgetUpdateで編集copyを作り、Entity.getとreadEachは従来のgetを維持する。copy・比較・書戻し・通知・例外時の挙動は変更しない。通常scalarに分岐や追加copyを足さず、上流のinline変換を維持した。
+
+基準commitは0fe7c12。nekoの固定配布物0.6.6-neko.3にbaseCommitとsourcePatchを記録し、追加公開はしない。nekoで二重装飾の省略だけを先に比較したところ、5,000 EntityのVector bulk更新p50が9.66〜10.25msから6.93msへ短縮した。neko側のflat書戻し軽量化は別段階で比較し、この変更の効果へ混ぜない。
+
+verify-fork成功：collections 23・core 153・React 37、生成配布物190テスト、型・build・pack。nekoでは更新中のget/readEachと借用失効をauto/always/neverで確認した。最終のneko verifyは481テストを含め成功。runtime変更は上記3ファイルに限定し、将来の上流更新では内部readerとsnapshot codecの組合せを確認する。
+
+ユーザー承認によりfeature/vector-update-readerでコミットする。branch統合・remote CIは今回のコミット範囲に含めない。
+
+nekoはその後、更新callbackをscalar列の編集copyへ正式移行した。借用viewは削除したが、get/readEachの構造化snapshotとupdateEachを分離する本変更は引き続き必要である。最終のneko verifyは481テスト、ブラウザ描画とInspector編集も確認した。

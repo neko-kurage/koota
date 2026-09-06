@@ -37,3 +37,7 @@
 
 - [統合前の作業範囲](Koota/branch-integration/2026-09-06-scope.md)
 - [develop・main統合とCI](Koota/branch-integration/2026-09-07-integration.md)
+
+## Query/update-reader
+
+- [更新用readerの分離と比較](Query/update-reader/2026-09-07-experiment.md)

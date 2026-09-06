@@ -58,13 +58,16 @@ function createTrait<S extends Schema>(schema: S = tagSchema as S): Trait<Norm<S
     validateSchema(schema);
 
     const id = traitId++;
+    const get = createGetFunction[traitType](schema);
     const Trait = Object.assign((params: TraitValue<Norm<S>>) => [Trait, params], {
         [$internal]: {
             id: id,
             set: createSetFunction[traitType](schema),
             fastSet: createFastSetFunction[traitType](schema),
             fastSetWithChangeDetection: createFastSetChangeFunction[traitType](schema),
-            get: createGetFunction[traitType](schema),
+            get,
+            // FORK(Query/update-reader): flatな編集copyに公開snapshot用の装飾を重ねない。
+            getUpdate: get,
             createStore: () => createStore<S>(schema),
             relation: null,
             type: traitType,
