@@ -12,6 +12,8 @@ concurrency:
 
 jobs:
   build:
+    # The fork validates artifacts locally; upstream publication stays upstream-only.
+    if: github.repository == 'pmndrs/koota'
     uses: pmndrs/docs/.github/workflows/build.yml@v2
     with:
       mdx: 'docs'

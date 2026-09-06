@@ -6,6 +6,8 @@ on:
 
 jobs:
   publish-canary:
+    # The fork validates artifacts locally; upstream publication stays upstream-only.
+    if: github.repository == 'pmndrs/koota'
     runs-on: ubuntu-latest
     permissions:
       id-token: write # required for OIDC trusted publishing

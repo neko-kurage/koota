@@ -39,3 +39,7 @@ dist
 packages/publish/react/
 
 .labs
+
+# Local fork verification outputs
+.artifacts/
+.worktrees/
