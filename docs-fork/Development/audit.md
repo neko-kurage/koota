@@ -1,15 +1,5 @@
 # 残作業
 
-## 次に進める順番
+現在、着手が必要な登録済み項目はない。
 
-1. Koota/branch-integration：採用判断後にfeatureを統合し、明示branchのremote反映とCI確認を行う。
-
-merge・push・publishの承認を兼ねない。
-
-## 残作業
-
-| ID                | 作業                                      | 状態                   | 次に決める・確認すること                                                                                                                          |
-| ----------------- | ----------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Koota/branch-integration](Discussion/Koota/branch-integration/2026-09-06_scope.md) | 検証済みfeatureの統合とremote反映         | 未着手                 | developへ反映する範囲を決め、明示branchをpushしCI確認。既存ローカルverify成功をCI成功とみなさない                                                 |
-
-Entity有効化は今回の性能候補とは別件。再入症状の根拠は[削除hookの実験](Performance/Runtime/performance-candidates/2026-09-06_rejected-candidates-v1.md#06-entity削除hookとcleanup)。初回配布と有効化の設計を混同しない。
+新しい候補や上流更新が生じたときに追加する。完了記録は[History](History/00_index.md)、普段の更新は[開発手順](fork-workflow.md)を参照する。

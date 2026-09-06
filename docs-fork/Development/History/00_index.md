@@ -20,6 +20,7 @@
 
 ## Entity/reentrant-destroy
 
+- [修正前の作業範囲](Entity/reentrant-destroy/2026-09-06-scope.md)
 - [削除再入の修正](Entity/reentrant-destroy/2026-09-06-fix.md)
 
 ## Query/initial-population
@@ -29,4 +30,10 @@
 
 ## Koota/distribution
 
+- [配布方式の検討範囲](Koota/distribution/2026-09-06-scope.md)
 - [修正版配布物のneko導入](Koota/distribution/2026-09-07-neko-integration.md)
+
+## Koota/branch-integration
+
+- [統合前の作業範囲](Koota/branch-integration/2026-09-06-scope.md)
+- [develop・main統合とCI](Koota/branch-integration/2026-09-07-integration.md)
