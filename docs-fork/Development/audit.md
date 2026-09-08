@@ -1,7 +1,7 @@
 # 残作業
 
-| ID | 作業 | 状態 | 現行の扱いと再開条件 | 根拠・詳細 |
-| --- | --- | --- | --- | --- |
-| [Query/sparse-retention](History/Query/sparse-retention/2026-09-07_work.md) | Queryの疎索引保持修正を固定配布物へ反映する | 検証中 | 本体修正・source/配布物テスト・性能比較は完了。本体修正をコミットし、次に固定配布物を作成して利用側への採用を確認する | [比較結果](Performance/Query/sparse-retention/2026-09-07_measurement.md) |
+現在、着手が必要な登録済み項目はない。
+
+新しい候補や上流更新が生じたときに追加する。完了記録は[History](History/00_index.md)、普段の更新は[開発手順](fork-workflow.md)を参照する。
 
 [開発資料へ戻る](00_index.md)
