@@ -60,3 +60,32 @@ describe('SparseSet', () => {
         expect(set.sparse[3]).toBe(2);
     });
 });
+
+// FORK(Query/sparse-retention): 累積生成数ではなく現存集合へ索引の保持量を戻す。
+describe('SparseSet retention', () => {
+    it('bounds retained keys across generations and preserves membership after sorting', () => {
+        const set = new SparseSet();
+        const live: number[] = [];
+        for (let generation = 0; generation < 10000; generation++) {
+            const value = generation * 1048576 + 7;
+            set.add(value);
+            live.push(value);
+            if (live.length > 4) {
+                const removed = live.shift()!;
+                set.remove(removed);
+                expect(set.has(removed)).toBe(false);
+            }
+        }
+        expect(set.dense).toHaveLength(4);
+        expect(Object.keys(set.sparse).length).toBeLessThanOrEqual(1024);
+        for (const value of live) expect(set.has(value)).toBe(true);
+
+        set.remove(live.shift()!);
+        set.sort();
+        expect(set.dense).toEqual(live);
+        set.clear();
+        expect(Object.keys(set.sparse)).toHaveLength(0);
+        set.add(0);
+        expect(set.dense).toEqual([0]);
+    });
+});

@@ -18,3 +18,5 @@ neko-threejsと同じ分類を使う。
 Entityの[削除と再入](Architecture/Structure/Entity/02-destruction.md)もArchitectureを正本とする。
 
 [Queryの初期集合](Architecture/Structure/Query/01-initial-population.md)も現行契約として記録する。
+
+[Query集合の索引保持](Architecture/Structure/Query/02_membership-storage.md)は反復生成時の内部保持と整理条件を説明する。

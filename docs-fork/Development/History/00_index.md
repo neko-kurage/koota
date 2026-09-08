@@ -41,3 +41,7 @@
 ## Query/update-reader
 
 - [更新用readerの分離と比較](Query/update-reader/2026-09-07-experiment.md)
+
+## Query/sparse-retention
+
+- [疎索引保持の修正](Query/sparse-retention/2026-09-07_work.md)

@@ -21,3 +21,7 @@
 ## Query/initial-population
 
 - [初回Query生成の比較](Query/initial-population/2026-09-06-measurements.md)
+
+## Query/sparse-retention
+
+- [疎索引の保持量と通常経路の比較](Query/sparse-retention/2026-09-07_measurement.md)
