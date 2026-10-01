@@ -1,11 +1,11 @@
 ---
 date: 2026-10-01T14:49
-updated: 2026-10-01T15:35
+updated: 2026-10-01T17:27
 ---
 
 # 数値Traitの保存履歴
 
-合意状態：合意済み。実装状態：neko.6として固定配布へ接続済み。利用側で疎更新の改善を根拠に採用を合意した。大規模な全件更新の費用調査は継続する。
+合意状態：合意済み。実装状態：neko.7として固定配布へ接続済み。利用側で疎更新の改善を根拠に採用を合意した。大規模な全件更新の費用調査は継続する。
 
 `trackTraitWrites(world, trait)`は登録済み数値SoAの保存履歴を返す。`revision`を保存し、次の`forEachChanged(since, visit, limit)`で、それ以降に保存対象になったEntityを列挙する。複数consumerが非消費で同じ履歴を読める。onChangeの購読・発火条件・発火時点は維持する。
 
@@ -22,3 +22,7 @@ neko側の保存・capture比較では4096件の疎更新が短縮した。初�
 [neko側の測定と残件](../../../../../neko-threejs/docs/Development/Runtime/sparse-updates/Performance/2026-10-01_recorded-capture.md)へ接続する。Koota自体はIncrementalCoreやTransformへ依存しない。
 
 [Auditへ戻る](../../audit.md)
+
+## 2026-10-01の周期差への対応
+
+neko.7では保存履歴を32768件（256KiB）に拡張した。1万Entityを2回保存してから読む条件で、16384件では不足し、32768件と65536件は完全に列挙できた。保存時間に明確な差がなく、少ない保持量の32768件を選んだ。列挙callback中に履歴を上書きした場合もfalseを返し、consumerは全件確認へ戻る。source core 162・配布用199テストとverify-forkが成功。総合性能の受入はnekoのRuntime/sparse-updatesで継続する。
