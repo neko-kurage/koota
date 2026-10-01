@@ -329,7 +329,13 @@ export function hasTrait(world: World, entity: Entity, trait: Trait): boolean {
     return (mask & bitflag) === bitflag;
 }
 
-export /* @inline @pure */ function getStore<C extends Trait = Trait>(
+export function getStore<C extends Trait = Trait>(world: World, trait: C): ExtractStore<C> {
+    const instance = getTraitInstance(world[$internal].traitInstances, trait)!;
+    instance.storeExposed = true;
+    return instance.store as ExtractStore<C>;
+}
+
+export /* @inline @pure */ function readStore<C extends Trait = Trait>(
     world: World,
     trait: C
 ): ExtractStore<C> {
@@ -374,7 +380,7 @@ export function getTrait(world: World, entity: Entity, trait: Trait | RelationPa
     if (!hasTrait(world, entity, trait)) return undefined;
 
     const traitCtx = trait[$internal];
-    const store = getStore(world, trait);
+    const store = readStore(world, trait);
     const data = traitCtx.get(getEntityId(entity), store);
 
     return data;
@@ -410,7 +416,7 @@ export function getTrait(world: World, entity: Entity, trait: Trait | RelationPa
     triggerChanged: boolean
 ) {
     const ctx = trait[$internal];
-    const store = getStore(world, trait);
+    const store = readStore(world, trait);
     const index = getEntityId(entity);
 
     // A short circuit is more performance than an if statement which creates a new code statement.

@@ -43,5 +43,6 @@ export /* @inline @pure */ function hasTraitInstance(
  * Clear all trait data
  */
 export /* @inline */ function clearTraitInstance(traitData: TraitInstanceArray): void {
+    for (const instance of traitData) instance?.writeTracking?.dispose();
     traitData.length = 0;
 }

@@ -44,6 +44,8 @@ export type {
     RelationTarget,
 } from './relation/types';
 export { getStore, trait } from './trait/trait';
+export { trackTraitWrites } from './trait/write-tracking';
+export type { TraitWrites } from './trait/write-tracking';
 export type {
     ConfigurableTrait,
     ExtractIsTag,

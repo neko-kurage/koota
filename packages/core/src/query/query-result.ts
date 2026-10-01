@@ -6,7 +6,7 @@ import { getEntityId } from '../entity/utils/pack-entity';
 import { isRelationPair } from '../relation/utils/is-relation';
 import type { Relation } from '../relation/types';
 import { Store } from '../storage';
-import { getStore } from '../trait/trait';
+import { readStore as getStore } from '../trait/trait';
 import type { Trait } from '../trait/types';
 import { shallowEqual } from '../utils/shallow-equal';
 import type { World } from '../world';
@@ -189,6 +189,8 @@ export function createQueryResult<T extends QueryParameter[]>(
         },
 
         useStores(callback: (stores: StoresFromParameters<T>, entities: readonly Entity[]) => void) {
+            for (const trait of traits)
+                world[$internal].traitInstances[trait.id]!.storeExposed = true;
             callback(stores as unknown as StoresFromParameters<T>, entities);
             return results;
         },
