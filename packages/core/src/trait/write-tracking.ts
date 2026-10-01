@@ -17,7 +17,7 @@ export interface TraitWrites {
 /** World内のTraitに共有する有界履歴。store公開後は列挙の完全性を保証しない。 */
 export class TraitWriteTracking implements TraitWrites {
     private version = 0;
-    private entries = new Float64Array(16384);
+    private entries = new Float64Array(32768);
 
     constructor(
         private world: World | undefined,
@@ -59,7 +59,7 @@ export class TraitWriteTracking implements TraitWrites {
             return false;
         for (let index = since; index < end; index++)
             visit(this.entries[index % this.entries.length] as Entity);
-        return true;
+        return this.revision !== undefined && this.version - since <= this.entries.length;
     }
 }
 

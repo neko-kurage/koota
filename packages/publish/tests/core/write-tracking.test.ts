@@ -99,7 +99,7 @@ it('keeps readers independent and falls back after history overflow or later sto
         const entity = world.spawn(Position);
         const writes = trackTraitWrites(world, Position);
         const firstRevision = writes.revision!;
-        for (let index = 0; index < 16385; index++) entity.set(Position, { x: index }, false);
+        for (let index = 0; index < 65537; index++) entity.set(Position, { x: index }, false);
         expect(writes.forEachChanged(firstRevision, () => {})).toBe(false);
         const recent = writes.revision! - 1;
         const keys: number[] = [];
@@ -109,6 +109,40 @@ it('keeps readers independent and falls back after history overflow or later sto
         const store = getStore(world, Position);
         store.x[entity.id()] = 42;
         expect(writes.forEachChanged(writes.revision ?? -1, () => {})).toBe(false);
+    } finally {
+        world.destroy();
+    }
+});
+
+it('retains two display updates before a fixed consumer reads them', () => {
+    const Position = trait({ x: 0 });
+    const world = createWorld();
+    try {
+        const entity = world.spawn(Position);
+        const writes = trackTraitWrites(world, Position);
+        for (let index = 0; index < 20000; index++) entity.set(Position, { x: index }, false);
+        let count = 0;
+        expect(writes.forEachChanged(0, () => count++, 25000)).toBe(true);
+        expect(count).toBe(20000);
+        expect(writes.forEachChanged(0, () => {}, 10000)).toBe(false);
+    } finally {
+        world.destroy();
+    }
+});
+
+it('reports incomplete history when a visitor overwrites pending entries', () => {
+    const Position = trait({ x: 0 });
+    const world = createWorld();
+    try {
+        const entity = world.spawn(Position);
+        const writes = trackTraitWrites(world, Position);
+        entity.set(Position, { x: 1 }, false);
+        expect(
+            writes.forEachChanged(0, () => {
+                for (let index = 0; index < 65537; index++) entity.set(Position, { x: index }, false);
+            })
+        ).toBe(false);
+        expect(writes.forEachChanged(writes.revision!, () => {})).toBe(true);
     } finally {
         world.destroy();
     }
