@@ -1,0 +1,24 @@
+---
+date: 2026-10-01T14:49
+updated: 2026-10-01T15:35
+---
+
+# 数値Traitの保存履歴
+
+合意状態：合意済み。実装状態：neko.6として固定配布へ接続済み。利用側で疎更新の改善を根拠に採用を合意した。大規模な全件更新の費用調査は継続する。
+
+`trackTraitWrites(world, trait)`は登録済み数値SoAの保存履歴を返す。`revision`を保存し、次の`forEachChanged(since, visit, limit)`で、それ以降に保存対象になったEntityを列挙する。複数consumerが非消費で同じ履歴を読める。onChangeの購読・発火条件・発火時点は維持する。
+
+Entity.setとQueryの保存に入る前に記録する。保存の途中で例外になっても、consumerが現在値を再確認できる。値が同一の保存や、実際の保存前に失敗した候補も許す。利用側がstoreを管理して直接保存する場合は、内部TraitInstanceのwriteTrackingへ同じ記録を渡す。内部へ接続するnekoの生成コードはkoota-adapterへ閉じ込める。
+
+履歴はWorld内のTraitごとに必要時だけ作り、16384 Entity分を保持する。履歴不足・上限超過・storeの直接公開後はfalseを返す。getStoreとuseStoresで公開された参照はcallback後も保持され得るため、そのTraitの全件確認を継続する。追跡開始前の公開も対象になる。
+
+追跡を開始したTraitだけ保存関数を接続する。同じTraitを使う別Worldではstoreの照会が発生するが、履歴はWorldごとに分かれる。追跡しない別Traitの保存関数には処理を追加しない。Worldのreset・destroyでstore対応と履歴配列を解放し、旧readerは全件確認を要求する。
+
+無通知保存、後続callbackの失敗、履歴の再読、列挙上限、追跡開始前後のstore公開、複数Worldとresetを恒久テストで検証した。verify-forkによりcollections 24件、core 160件、react 37件、配布用197件とbuildが成功した。
+
+neko側の保存・capture比較では4096件の疎更新が短縮した。初期案の全保存経路への判定追加は、追跡非利用時の保存が約6.36→8.12nsになったため見送った。Trait単位の接続へ変更後は約6.51→6.30nsで、追加費用はこの対照では検出していない。同一Traitを使う未追跡Worldの費用と大規模条件の受入は未確定。
+
+[neko側の測定と残件](../../../../../neko-threejs/docs/Development/Runtime/sparse-updates/Performance/2026-10-01_recorded-capture.md)へ接続する。Koota自体はIncrementalCoreやTransformへ依存しない。
+
+[Auditへ戻る](../../audit.md)
