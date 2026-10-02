@@ -3,19 +3,16 @@ import type { Entity } from '../entity/types';
 import type { World } from '../world';
 import type { Trait, TraitInstance } from './types';
 
-const trackedStores = new WeakMap<object, TraitWriteTracking>();
+const trackedStores = new WeakMap<object, WriteLog>();
 const instrumented = new WeakSet<Trait>();
 
-// FORK(Trait/write-tracking): 無通知保存と途中失敗を、consumerの差分読取りへ伝える。
+// FORK(Trait/write-log): 無通知保存と途中失敗を、consumerの差分読取りへ伝える。
 
-/** 保存済みの数値Traitを非消費で読む。公開の変更通知とは独立する。 */
-export interface TraitWrites {
-    readonly revision: number | undefined;
-    forEachChanged(since: number, visit: (entity: Entity) => void, limit?: number): boolean;
-}
+/** consumerへ渡す保存履歴。setter用のslot記録は公開契約に含めない。 */
+export type TraitWriteLog = Pick<WriteLog, 'revision' | 'record' | 'forEachChanged'>;
 
 /** World内のTraitに共有する有界履歴。store公開後は列挙の完全性を保証しない。 */
-export class TraitWriteTracking implements TraitWrites {
+export class WriteLog {
     private version = 0;
     private entries = new Float64Array(32768);
 
@@ -64,30 +61,30 @@ export class TraitWriteTracking implements TraitWrites {
 }
 
 /** 数値SoAだけを追跡する。取得済みstoreを保持する利用者がいれば全件確認を要求する。 */
-export function trackTraitWrites(world: World, trait: Trait): TraitWrites {
+export function writeLog(world: World, trait: Trait): TraitWriteLog {
     const instance = world[$internal].traitInstances[trait.id];
     if (
         !instance ||
         trait[$internal].type !== 'soa' ||
         Object.values(trait.schema).some((value) => typeof value !== 'number')
     )
-        throw new TypeError('Write tracking requires a registered numeric SoA trait.');
-    if (instance.writeTracking) return instance.writeTracking;
-    const tracking = new TraitWriteTracking(world, instance);
-    trackedStores.set(instance.store, tracking);
-    instance.writeTracking = tracking;
+        throw new TypeError('Write log requires a registered numeric SoA trait.');
+    if (instance.writeLog) return instance.writeLog;
+    const log = new WriteLog(world, instance);
+    trackedStores.set(instance.store, log);
+    instance.writeLog = log;
     if (!instrumented.has(trait)) {
         const internal = trait[$internal];
-        internal.set = trackSetter(internal.set);
-        internal.fastSet = trackSetter(internal.fastSet);
-        internal.fastSetWithChangeDetection = trackSetter(internal.fastSetWithChangeDetection);
+        internal.set = recordSetter(internal.set);
+        internal.fastSet = recordSetter(internal.fastSet);
+        internal.fastSetWithChangeDetection = recordSetter(internal.fastSetWithChangeDetection);
         instrumented.add(trait);
     }
-    return tracking;
+    return log;
 }
 
 /** 追跡するTraitだけを接続し、非利用Traitの保存関数を維持する。 */
-function trackSetter<T>(set: (index: number, store: any, value: any) => T) {
+function recordSetter<T>(set: (index: number, store: any, value: any) => T) {
     return (index: number, store: any, value: any): T => {
         trackedStores.get(store)?.recordSlot(index);
         return set(index, store, value);

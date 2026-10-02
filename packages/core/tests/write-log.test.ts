@@ -1,12 +1,12 @@
 import { expect, it } from 'vitest';
-import { createWorld, getStore, trackTraitWrites, trait } from '../src';
+import { createWorld, getStore, writeLog, trait } from '../src';
 
 it('records silent saves without delivering public change events', () => {
     const Position = trait({ x: 0 });
     const world = createWorld();
     try {
         const entity = world.spawn(Position);
-        const writes = trackTraitWrites(world, Position);
+        const writes = writeLog(world, Position);
         let notified = 0;
         world.onChange(Position, () => notified++);
         entity.set(Position, { x: 4 }, false);
@@ -28,8 +28,8 @@ it('separates Worlds sharing a Trait and retires readers on reset', () => {
     try {
         const first = a.spawn(Value),
             second = b.spawn(Value);
-        const wa = trackTraitWrites(a, Value),
-            wb = trackTraitWrites(b, Value);
+        const wa = writeLog(a, Value),
+            wb = writeLog(b, Value);
         first.set(Value, { x: 1 }, false);
         second.set(Value, { x: 2 }, false);
         const keys: number[] = [];
@@ -54,7 +54,7 @@ it('keeps earlier saves when a later callback fails', () => {
     try {
         const first = world.spawn(Position);
         world.spawn(Position);
-        const writes = trackTraitWrites(world, Position);
+        const writes = writeLog(world, Position);
         let calls = 0;
         expect(() =>
             world.query(Position).updateEach(
@@ -84,7 +84,7 @@ it.each(['getStore', 'useStores'])(
             world.spawn(Position);
             if (mode === 'getStore') getStore(world, Position);
             else world.query(Position).useStores(() => {});
-            const writes = trackTraitWrites(world, Position);
+            const writes = writeLog(world, Position);
             expect(writes.forEachChanged(writes.revision ?? -1, () => {})).toBe(false);
         } finally {
             world.destroy();
@@ -97,7 +97,7 @@ it('keeps readers independent and falls back after history overflow or later sto
     const world = createWorld();
     try {
         const entity = world.spawn(Position);
-        const writes = trackTraitWrites(world, Position);
+        const writes = writeLog(world, Position);
         const firstRevision = writes.revision!;
         for (let index = 0; index < 65537; index++) entity.set(Position, { x: index }, false);
         expect(writes.forEachChanged(firstRevision, () => {})).toBe(false);
@@ -119,7 +119,7 @@ it('retains two display updates before a fixed consumer reads them', () => {
     const world = createWorld();
     try {
         const entity = world.spawn(Position);
-        const writes = trackTraitWrites(world, Position);
+        const writes = writeLog(world, Position);
         for (let index = 0; index < 20000; index++) entity.set(Position, { x: index }, false);
         let count = 0;
         expect(writes.forEachChanged(0, () => count++, 25000)).toBe(true);
@@ -135,7 +135,7 @@ it('reports incomplete history when a visitor overwrites pending entries', () =>
     const world = createWorld();
     try {
         const entity = world.spawn(Position);
-        const writes = trackTraitWrites(world, Position);
+        const writes = writeLog(world, Position);
         entity.set(Position, { x: 1 }, false);
         expect(
             writes.forEachChanged(0, () => {

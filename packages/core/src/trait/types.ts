@@ -3,7 +3,7 @@ import type { Entity } from '../entity/types';
 import type { QueryInstance } from '../query/types';
 import type { Relation, RelationPair } from '../relation/types';
 import type { AoSFactory, Schema, Store, StoreType } from '../storage';
-import type { TraitWriteTracking } from './write-tracking';
+import type { WriteLog } from './write-log';
 
 // Backwards-compatible alias (the trait "type" is the storage layout).
 export type TraitType = StoreType;
@@ -85,7 +85,7 @@ export type IsTag<T extends Trait> = ExtractIsTag<T>;
 
 export interface TraitInstance<T extends Trait = Trait, S extends Schema = ExtractSchema<T>> {
     storeExposed?: boolean;
-    writeTracking?: TraitWriteTracking;
+    writeLog?: WriteLog;
     generationId: number;
     bitflag: number;
     trait: Trait;
