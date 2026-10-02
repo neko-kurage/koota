@@ -1,3 +1,8 @@
+---
+date: null
+updated: 2026-10-02T19:23
+---
+
 This monorepo uses `pnpm`.
 
 **IMPORTANT:** Always use kebab-case for file names, even if it is not the usual convention.
@@ -28,3 +33,7 @@ Fork documentation entry point: docs-fork/Development/00_index.md. Follow docs-f
 Keep fork-owned documentation under docs-fork/, separate from upstream docs/. Use the same API, Architecture, Development and Guides categories as neko-threejs; put design history in Development/History and measurements in Development/Performance. Create categories only when they have content. Update local links when moving pages.
 
 Documentation routing: docs-fork/Development/documentation.md. Agreed but unimplemented designs remain in Development/Discussion. The audit contains outstanding work only; completed records belong in topic/date directories under History and Performance.
+
+## 保存履歴の語彙
+
+Traitの保存履歴の型・操作を新設・変更するときは、nekoを正本とする[更新経路の共通語彙](../neko-threejs/docs/Architecture/Runtime/vocabulary.md)を読む。
