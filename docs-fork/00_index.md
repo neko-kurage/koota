@@ -1,3 +1,8 @@
+---
+date: 2026-09-06T19:56
+updated: 2026-11-04T01:43
+---
+
 # Koota fork資料
 
 上流の`docs/`と独自の`docs-fork/`を分離する。上流docsの配置・公開用設定は変更しない。
@@ -11,7 +16,7 @@ neko-threejsと同じ分類を使う。
 | Development  | 開発手順・規則・Audit。検討と移行はHistory、測定はPerformanceへ       |
 | Guides       | 利用手順・Quick Start・Concepts                                       |
 
-現在の独自資料は[Development](Development/00_index.md)と、追加APIの[Query結果の絞込み](API/query-results.md)・[EntityのTrait一覧](API/entity-traits.md)にある。Architecture・Guidesは該当資料が生まれた時に追加する。ファイル名は上流のkebab-case規則に従う。
+現在の独自資料は[Development](Development/00_index.md)と、追加APIの[Query結果の絞込み](API/query-results.md)・[EntityのTrait一覧](API/entity-traits.md)・[Entityの一括生成](API/spawn-batch.md)にある。Architectureは以下の現行契約を扱い、Guidesは利用手順が生まれた時に追加する。ファイル名は上流のkebab-case規則に従う。
 
 現行の[Entity有効状態とQuery参加](Architecture/Structure/Entity/01-activation.md)はArchitectureに記録する。
 
@@ -20,3 +25,5 @@ Entityの[削除と再入](Architecture/Structure/Entity/02-destruction.md)もAr
 [Queryの初期集合](Architecture/Structure/Query/01-initial-population.md)も現行契約として記録する。
 
 [Query集合の索引保持](Architecture/Structure/Query/02_membership-storage.md)は反復生成時の内部保持と整理条件を説明する。
+
+[一括生成の設計と本番接続](Development/History/Entity/batch-spawn/2026-11-02_design.md)は開発記録へ保存している。
