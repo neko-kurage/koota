@@ -1,11 +1,5 @@
 import type { Entity } from '../types';
-import {
-    getEntityGeneration,
-    getEntityId,
-    getEntityWorldId,
-    incrementGeneration,
-    packEntity,
-} from './pack-entity';
+import { getEntityId, incrementGeneration, packEntity } from './pack-entity';
 
 export type EntityIndex = {
     /** The number of currently alive entities. */
@@ -90,11 +84,7 @@ export const releaseEntity = (index: EntityIndex, entity: Entity): void => {
 export const isEntityAlive = /* @inline @pure */ (index: EntityIndex, entity: Entity): boolean => {
     const denseIndex = index.sparse[getEntityId(entity)];
     if (denseIndex === undefined || denseIndex >= index.aliveCount) return false;
-    const storedEntity = index.dense[denseIndex];
-    return (
-        getEntityGeneration(entity) === getEntityGeneration(storedEntity) &&
-        getEntityWorldId(entity) === index.worldId
-    );
+    return index.dense[denseIndex] === entity;
 };
 
 /**

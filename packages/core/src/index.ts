@@ -3,7 +3,7 @@ export type { Actions, ActionsInitializer, ActionRecord } from './actions/types'
 export { $internal } from './common';
 export { getEntityTraits } from './entity/get-entity-traits';
 export type { Entity } from './entity/types';
-export { unpackEntity } from './entity/utils/pack-entity';
+export { getEntityId, unpackEntity } from './entity/utils/pack-entity';
 export { shallowEqual } from './utils/shallow-equal';
 export { createAdded } from './query/modifiers/added';
 export { createChanged } from './query/modifiers/changed';
@@ -83,8 +83,10 @@ export type { TraitInstance } from './trait/types';
 /** @deprecated Will remove this internal type entirely */
 export type { QueryInstance } from './query/types';
 
-export { IncludeDisabled } from './query/modifiers/include-disabled';
-export { IsDisabled } from './query/query';
-export { bindEntityActivation, setEntityEnabledGate } from './entity/entity-activation';
-export type { EntityActivationBinding } from './entity/entity-activation';
-export { setEntitiesEnabledGate } from './entity/entity-activation';
+export { IncludeInactive } from './query/modifiers/include-inactive';
+export { IsInactive } from './query/query';
+export { setEntityOwnerActive, setEntitiesOwnerActive } from './entity/entity-activation';
+
+export { spawnBatch } from './entity/spawn-batch';
+export { destroyBatch } from './entity/batch-removal';
+export type { SpawnBatchOptions } from './entity/spawn-batch';

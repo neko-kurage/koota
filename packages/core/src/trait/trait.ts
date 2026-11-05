@@ -479,8 +479,8 @@ export function getTrait(world: World, entity: Entity, trait: Trait | RelationPa
         else query.remove(world, entity);
     }
 
-    // Add trait to entity internally
-    ctx.entityTraits.get(entity)!.add(trait);
+    // Keep the ordered inspection and destruction list in sync with membership.
+    ctx.entityTraits.add(entity, trait);
 
     return instance;
 }
@@ -488,17 +488,25 @@ export function getTrait(world: World, entity: Entity, trait: Trait | RelationPa
 /**
  * Core logic for removing a trait from an entity.
  * Does not emit remove subscriptions — callers handle emission.
+ * Uses a pre-resolved instance when provided; it must belong to the trait.
  */
-function removeTraitFromEntity(world: World, entity: Entity, trait: Trait): void {
-    if (!hasTrait(world, entity, trait)) return;
-
+export function removeTraitFromEntity(
+    world: World,
+    entity: Entity,
+    trait: Trait,
+    instance = getTraitInstance(world[$internal].traitInstances, trait)
+): void {
+    if (!instance) return;
     const ctx = world[$internal];
-    const instance = getTraitInstance(ctx.traitInstances, trait)!;
     const { generationId, bitflag, queries, trackingQueries } = instance;
 
     // Remove bitflag from entity bitmask
     const eid = getEntityId(entity);
-    ctx.entityMasks[generationId][eid] &= ~bitflag;
+    const mask = ctx.entityMasks[generationId];
+    if (!mask || (mask[eid] & bitflag) === 0) return;
+    mask[eid] &= ~bitflag;
+    // Record the confirmed removal for internal observers.
+    ctx.traitRemovalObservers?.get(instance)?.removed(entity);
 
     // Set the entity as dirty
     for (const dirtyMask of ctx.dirtyMasks.values()) {
@@ -534,6 +542,142 @@ function removeTraitFromEntity(world: World, entity: Entity, trait: Trait): void
         else query.remove(world, entity);
     }
 
-    // Remove trait from entity internally
-    ctx.entityTraits.get(entity)!.delete(trait);
+    // Keep the ordered inspection and destruction list in sync with membership.
+    ctx.entityTraits.remove(entity, trait);
+}
+
+export interface BatchTraitWrite {
+    readonly value: Record<string, unknown>;
+    readonly instance: TraitInstance;
+    readonly set: Trait[typeof $internal]['set'];
+    observedQueries: number;
+    skipsQueries: boolean;
+}
+
+// spawnBatchの期間中、Traitのinstance・setter・凍結scalar defaultsの解決結果を共有する。
+function prepareBatchTrait(world: World, config: ConfigurableTrait): BatchTraitWrite | null {
+    if (Array.isArray(config) || isRelationPair(config)) return null;
+
+    const trait = config as Trait;
+    if (isOrderedTrait(trait)) return null;
+
+    const schema = trait.schema;
+    if (
+        trait[$internal].type === 'aos' ||
+        !Object.isFrozen(schema) ||
+        Object.getPrototypeOf(schema) !== Object.prototype
+    )
+        return null;
+
+    const descriptors = Object.values(Object.getOwnPropertyDescriptors(schema));
+    const hasOnlyScalarDefaults = descriptors.every(
+        (descriptor) =>
+            'value' in descriptor && ['number', 'string', 'boolean'].includes(typeof descriptor.value)
+    );
+    if (!hasOnlyScalarDefaults) return null;
+
+    const ctx = world[$internal];
+    if (!hasTraitInstance(ctx.traitInstances, trait)) registerTrait(world, trait);
+    return {
+        value: schema as Record<string, unknown>,
+        instance: getTraitInstance(ctx.traitInstances, trait)!,
+        set: trait[$internal].set,
+        observedQueries: -1,
+        skipsQueries: false,
+    };
+}
+
+// FORK(Entity/batch-spawn): 保存の準備をbatchで共有し、Query・購読の観測は各Traitの既存順を保つ。
+export function addBatchTraits(
+    world: World,
+    entity: Entity,
+    traits: readonly ConfigurableTrait[],
+    writes: (BatchTraitWrite | null | undefined)[],
+    inactiveInstance?: TraitInstance
+): void {
+    const ctx = world[$internal];
+    for (let index = 0; index < traits.length; index++) {
+        const config = traits[index];
+        // Trait tupleとRelation pairは個別の値を持つため、共有キャッシュを経由しない。
+        if (typeof config !== 'function') {
+            addTrait(world, entity, config);
+            continue;
+        }
+        let traitWrite = writes[config.id];
+        if (traitWrite === undefined) {
+            traitWrite = prepareBatchTrait(world, config);
+            writes[config.id] = traitWrite;
+        } else if (traitWrite !== null && traitWrite.instance !== ctx.traitInstances[config.id]) {
+            // resetでinstance/storeが置き換わった場合は、古い準備を新しいinstanceへ差し替える。
+            traitWrite = prepareBatchTrait(world, config);
+            writes[config.id] = traitWrite;
+        }
+        if (traitWrite === null) {
+            addTrait(world, entity, config);
+            continue;
+        }
+
+        const instance = traitWrite.instance;
+        if (traitWrite.observedQueries !== ctx.queriesHashMap.size) {
+            traitWrite.observedQueries = ctx.queriesHashMap.size;
+            traitWrite.skipsQueries =
+                instance.trackingQueries.size === 0 &&
+                [...instance.queries].every(
+                    (query) =>
+                        inactiveInstance !== undefined &&
+                        query.traitInstances.forbidden.includes(inactiveInstance)
+                );
+        }
+        const canSkipQueryUpdates =
+            (inactiveInstance === undefined || hasTrait(world, entity, inactiveInstance.trait)) &&
+            traitWrite.skipsQueries &&
+            instance.addSubscriptions.size === 0 &&
+            !instance.storeExposed;
+
+        if (!canSkipQueryUpdates) {
+            const added = addTraitToEntity(world, entity, instance.trait);
+            if (!added) continue;
+            traitWrite.set(getEntityId(entity), added.store, traitWrite.value);
+            for (const sub of added.addSubscriptions) sub(entity);
+            continue;
+        }
+
+        const eid = getEntityId(entity);
+        if ((ctx.entityMasks[instance.generationId][eid] & instance.bitflag) !== 0) continue;
+        ctx.entityMasks[instance.generationId][eid] |= instance.bitflag;
+        for (const dirtyMask of ctx.dirtyMasks.values()) {
+            if (!dirtyMask[instance.generationId]) dirtyMask[instance.generationId] = [];
+            dirtyMask[instance.generationId][eid] |= instance.bitflag;
+        }
+        ctx.entityTraits.add(entity, instance.trait);
+        traitWrite.set(eid, instance.store, traitWrite.value);
+    }
+}
+
+// FORK(Entity/batch-spawn): 所有接続後に、生成時のIsInactiveのTrait通知を既存順序で発行する。
+export function notifyBatchTrait(world: World, entity: Entity, instance: TraitInstance): void {
+    const { generationId, bitflag, queries, trackingQueries } = instance;
+    for (const query of queries) {
+        if (
+            query.traitInstances.forbidden.includes(instance) &&
+            hasTrait(world, entity, instance.trait)
+        )
+            continue;
+        query.toRemove.remove(entity);
+        const matchesQuery =
+            query.relationFilters && query.relationFilters.length > 0
+                ? checkQueryWithRelations(world, query, entity)
+                : query.check(world, entity);
+        if (matchesQuery) query.add(entity);
+        else query.remove(world, entity);
+    }
+    for (const query of trackingQueries) {
+        query.toRemove.remove(entity);
+        const matchesQuery =
+            query.relationFilters && query.relationFilters.length > 0
+                ? checkQueryTrackingWithRelations(world, query, entity, 'add', generationId, bitflag)
+                : query.checkTracking(world, entity, 'add', generationId, bitflag);
+        if (matchesQuery) query.add(entity);
+        else query.remove(world, entity);
+    }
 }

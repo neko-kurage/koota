@@ -1,8 +1,9 @@
 import { $internal } from '../common';
 import { createEntity, destroyEntity } from '../entity/entity';
+import { EntityTraits } from '../entity/entity-traits';
 import type { Entity } from '../entity/types';
 import { createEntityIndex, getAliveEntities, isEntityAlive } from '../entity/utils/entity-index';
-import { IsDisabled, IsExcluded, createQuery, createQueryInstance } from '../query/query';
+import { IsInactive, IsExcluded, createQuery, createQueryInstance } from '../query/query';
 import { createRelationOnlyQueryResult } from '../query/query-result';
 import type { Query, QueryInstance, QueryParameter, QueryUnsubscriber } from '../query/types';
 import { createQueryHash } from '../query/utils/create-query-hash';
@@ -77,7 +78,7 @@ export function createWorld(
         [$internal]: {
             entityIndex: createEntityIndex(id),
             entityMasks: [[]],
-            entityTraits: new Map(),
+            entityTraits: new EntityTraits(),
             bitflag: 1,
             traitInstances: [],
             relations: new Set(),
@@ -92,6 +93,7 @@ export function createWorld(
             worldEntity: null!,
             trackedTraits: new Set(),
             resetSubscriptions: new Set(),
+            entityDestroySubscriptions: new Set(),
         } as WorldInternal,
 
         traits: new Set<Trait>(),
@@ -112,7 +114,7 @@ export function createWorld(
             // Register system traits.
             if (!hasTraitInstance(ctx.traitInstances, IsExcluded)) registerTrait(world, IsExcluded);
 
-            if (!hasTraitInstance(ctx.traitInstances, IsDisabled)) registerTrait(world, IsDisabled);
+            if (!hasTraitInstance(ctx.traitInstances, IsInactive)) registerTrait(world, IsInactive);
 
             // Check for traits passed into lazy init
             if (lazyTraits) {
@@ -186,10 +188,14 @@ export function createWorld(
                 }
             }
 
+            // Keep these observers through entity and query cleanup, then release them with the trait instances.
+            ctx.traitRemovalObservers?.clear();
+            ctx.traitRemovalObservers = undefined;
             clearTraitInstance(ctx.traitInstances);
             world.traits.clear();
             ctx.relations.clear();
 
+            ctx.entityDestroySubscriptions.clear();
             ctx.queriesHashMap.clear();
             ctx.queryInstances.length = 0;
             ctx.actionInstances.length = 0;
@@ -202,7 +208,7 @@ export function createWorld(
             ctx.trackedTraits.clear();
 
             // Create new world entity.
-            registerTrait(world, IsDisabled);
+            registerTrait(world, IsInactive);
             ctx.worldEntity = createEntity(world, IsExcluded);
 
             for (const sub of ctx.resetSubscriptions) {
@@ -266,6 +272,12 @@ export function createWorld(
         queryFirst(...args: [string] | QueryParameter[]) {
             // @ts-expect-error - Having an issue with the TS overloads.
             return world.query(...args)[0];
+        },
+
+        onEntityDestroy(callback: (entity: Entity) => void): QueryUnsubscriber {
+            const subscriptions = world[$internal].entityDestroySubscriptions;
+            subscriptions.add(callback);
+            return () => subscriptions.delete(callback);
         },
 
         onQueryAdd(

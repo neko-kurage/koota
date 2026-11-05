@@ -23,7 +23,7 @@ export function createEntity(world: World, ...traits: ConfigurableTrait[]): Enti
         query.resetTrackingBitmasks(getEntityId(entity));
     }
 
-    ctx.entityTraits.set(entity, new Set());
+    ctx.entityTraits.create(entity);
     addTrait(world, entity, ...traits);
 
     return entity;
@@ -32,6 +32,11 @@ export function createEntity(world: World, ...traits: ConfigurableTrait[]): Enti
 const cachedSet = new Set<Entity>();
 const cachedQueue = [] as Entity[];
 let destroyDepth = 0;
+
+// FORK(Entity/batch-destroy): 削除の通知から再入した一括削除は、1体ずつの削除へ戻す。
+export function isEntityDestroyInProgress(): boolean {
+    return destroyDepth > 0;
+}
 
 export function destroyEntity(world: World, entity: Entity) {
     const ctx = world[$internal];
@@ -43,7 +48,7 @@ export function destroyEntity(world: World, entity: Entity) {
 
     const entityQueue = cachedQueue;
     const processedEntities = cachedSet;
-    const start = entityQueue.length;
+    const queueStart = entityQueue.length;
     destroyDepth++;
     entityQueue.push(entity);
 
@@ -53,7 +58,7 @@ export function destroyEntity(world: World, entity: Entity) {
         // autoDestroy controls cascade behavior:
         // - 'source' (or 'orphan'): when target dies, destroy sources (e.g., parent dies → children die)
         // - 'target': when source dies, destroy targets (e.g., container dies → items die)
-        while (entityQueue.length > start) {
+        while (entityQueue.length > queueStart) {
             const currentEntity = entityQueue.pop()!;
             if (processedEntities.has(currentEntity)) continue;
 
@@ -65,8 +70,8 @@ export function destroyEntity(world: World, entity: Entity) {
                 // Handle entities that have relations pointing TO currentEntity (currentEntity is target)
                 // If autoDestroy is 'orphan', destroy those sources
                 const sources = getEntitiesWithRelationTo(world, relation, currentEntity);
-                for (let si = sources.length - 1; si >= 0; si--) {
-                    const source = sources[si];
+                for (let sourceIndex = sources.length - 1; sourceIndex >= 0; sourceIndex--) {
+                    const source = sources[sourceIndex];
                     if (!world.has(source)) continue;
 
                     cleanupRelationTarget(world, relation, source, currentEntity);
@@ -85,37 +90,61 @@ export function destroyEntity(world: World, entity: Entity) {
                 }
             }
 
-            // Remove all traits of the current entity.
-            const entityTraits = ctx.entityTraits.get(currentEntity);
-            if (entityTraits) {
-                for (const trait of entityTraits) {
-                    removeTrait(world, currentEntity, trait);
+            // Callbacks may remove or re-add traits; keep processing them in addition order.
+            const entityTraits = ctx.entityTraits;
+            if (entityTraits.beginRemoval(currentEntity)) {
+                try {
+                    for (
+                        let traitIndex = 0;
+                        traitIndex < entityTraits.count(currentEntity);
+                        traitIndex++
+                    ) {
+                        const trait = entityTraits.at(currentEntity, traitIndex);
+                        if (trait !== undefined) removeTrait(world, currentEntity, trait);
+                    }
+                } finally {
+                    entityTraits.endRemoval(currentEntity);
                 }
+            }
+
+            // FORK(Entity/destroy-notification): 解放後の通知から同じslotを再利用できるため、maskは解放前に消す。
+            const entityId = getEntityId(currentEntity);
+            for (let generationId = 0; generationId < ctx.entityMasks.length; generationId++) {
+                ctx.entityMasks[generationId][entityId] = 0;
             }
 
             // Free the entity.
             releaseEntity(ctx.entityIndex, currentEntity);
             clearEntityActivation(world, currentEntity);
 
+            // Query通知から再入して同じslotを使う前に、古いTrait履歴を消す。
+            const observers = ctx.traitRemovalObservers;
+            if (observers !== undefined) {
+                for (const observer of observers.values()) {
+                    observer.released(currentEntity, entityId, false);
+                }
+            }
+
             // Remove the entity from the all query.
             const allQuery = ctx.queriesHashMap.get('');
             if (allQuery) allQuery.remove(world, currentEntity);
-            // FORK(Prefab/entity-activation): IncludeDisabledだけの集合も、Traitが空の削除を受け取る。
+            // FORK(Entity/destroy-notification): ID・activation・All Query更新後、IncludeInactive Query更新前に同期通知する。
+            // 例外時は残りの除去を行わず、そのまま伝播する。
+            for (const callback of ctx.entityDestroySubscriptions) callback(currentEntity);
+
+            // FORK(Prefab/entity-activation): IncludeInactiveだけの集合も、Traitが空の削除を受け取る。
             const allDisabledQuery = ctx.queriesHashMap.get('-1');
             if (allDisabledQuery) allDisabledQuery.remove(world, currentEntity);
 
+            // FORK(Entity/destroy-query): Trait除去の途中で否定条件に一致した個体も、解放後に外す。
+            for (const query of ctx.notQueries) query.remove(world, currentEntity);
+
             // Remove all entity state from world.
             ctx.entityTraits.delete(currentEntity);
-
-            // Clear entity bitmasks.
-            const eid = getEntityId(currentEntity);
-            for (let i = 0; i < ctx.entityMasks.length; i++) {
-                ctx.entityMasks[i][eid] = 0;
-            }
         }
     } finally {
         // 例外ではこの呼出しの未処理分だけを捨てる。外側の待ち一覧とゲーム状態は戻さない。
-        entityQueue.length = start;
+        entityQueue.length = queueStart;
         if (--destroyDepth === 0) processedEntities.clear();
     }
 }

@@ -10,6 +10,6 @@ import type { Entity } from './types';
  * Entityが存在しなければ空配列を返す。
  */
 export function getEntityTraits(world: World, entity: Entity): readonly Trait[] {
-    // EntityのkeyにはgenerationとWorldも含まれる。内部の可変Set自体は返さない。
-    return [...(world[$internal].entityTraits.get(entity) ?? [])];
+    // 完全なEntity IDでの照合と、内部列から独立した配列の生成をsnapshotに任せる。
+    return world[$internal].entityTraits.snapshot(entity);
 }

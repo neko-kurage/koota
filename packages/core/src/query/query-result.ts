@@ -1,5 +1,5 @@
 import { getTraitInstance } from '../trait/trait-instance';
-import { IsDisabled } from './query';
+import { IsInactive } from './query';
 import { $internal } from '../common';
 import type { Entity } from '../entity/types';
 import { getEntityId } from '../entity/utils/pack-entity';
@@ -29,9 +29,9 @@ export function createQueryResult<T extends QueryParameter[]>(
 ): QueryResult<T> {
     // FORK(Prefab/entity-activation): 走査中の休止は既存maskを直接確認する。
     // Entity.has経由で毎個体のWorldを解決すると通常更新が約45%悪化したため避ける。
-    const disabled = getTraitInstance(world[$internal].traitInstances, IsDisabled)!;
+    const disabled = getTraitInstance(world[$internal].traitInstances, IsInactive)!;
     const disabledMask = world[$internal].entityMasks[disabled.generationId];
-    const disabledBit = query.includeDisabled ? 0 : disabled.bitflag;
+    const disabledBit = query.includeInactive ? 0 : disabled.bitflag;
     const traits: Trait[] = [];
     const stores: Store<any>[] = [];
 

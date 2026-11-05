@@ -1,5 +1,5 @@
 import { afterEach, expect, it } from 'vitest';
-import { createWorld, trait, Not, IncludeDisabled, createRemoved } from '../../dist';
+import { createWorld, trait, Not, IncludeInactive, createRemoved } from '../../dist';
 
 const worlds: ReturnType<typeof createWorld>[] = [];
 function makeWorld() {
@@ -13,14 +13,14 @@ afterEach(() => {
 
 it.each([false, true])(
     '初回Queryは破棄済みslotを含まず、再利用した個体を一度だけ返す（disabled含む=%s）',
-    (includeDisabled) => {
+    (includeInactive) => {
         const world = makeWorld();
         const Mark = trait();
         const first = world.spawn();
         const second = world.spawn();
         first.destroy();
         second.destroy();
-        const flags = includeDisabled ? [IncludeDisabled()] : [];
+        const flags = includeInactive ? [IncludeInactive()] : [];
         expect([...world.query(...flags)]).toEqual([]);
         const replacement = world.spawn();
         // Not条件はここで初めて登録し、既存の空Queryの更新で代用しない。

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { $internal, createQuery, createWorld, IncludeDisabled, trait } from '../src';
+import { $internal, createQuery, createWorld, IncludeInactive, trait } from '../src';
 
 describe('Query sparse retention', () => {
     it('bounds sparse keys after recycled generations and preserves subscription-only matches', () => {
         const world = createWorld();
         const State = trait({ value: 0 });
-        const observed = createQuery(State, IncludeDisabled());
+        const observed = createQuery(State, IncludeInactive());
         let removed = 0;
         world.onQueryRemove(observed, () => removed++);
         const current = [world.spawn(State), world.spawn(State)];

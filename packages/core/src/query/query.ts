@@ -33,7 +33,7 @@ import { isQuery } from './utils/is-query';
 
 export const IsExcluded: TagTrait = trait();
 // FORK(Prefab/entity-activation): 値を消さずQuery参加だけを止める内部tag。
-export const IsDisabled: TagTrait = trait();
+export const IsInactive: TagTrait = trait();
 
 function resolveRelationFilter(filter: ResolvedRelationFilter): ResolvedRelationFilter {
     if (!filter.targetQuery) return filter;
@@ -196,7 +196,7 @@ export function createQueryInstance<T extends QueryParameter[]>(
 ): QueryInstance {
     const query: QueryInstance = {
         version: 0,
-        includeDisabled: parameters.some((p) => isModifier(p) && p.type === 'include-disabled'),
+        includeInactive: parameters.some((p) => isModifier(p) && p.type === 'include-inactive'),
         world,
         parameters,
         hash: '',
@@ -303,9 +303,9 @@ export function createQueryInstance<T extends QueryParameter[]>(
         }
     }
 
-    if (!query.includeDisabled) {
-        if (!hasTraitInstance(ctx.traitInstances, IsDisabled)) registerTrait(world, IsDisabled);
-        query.traitInstances.forbidden.push(getTraitInstance(ctx.traitInstances, IsDisabled)!);
+    if (!query.includeInactive) {
+        if (!hasTraitInstance(ctx.traitInstances, IsInactive)) registerTrait(world, IsInactive);
+        query.traitInstances.forbidden.push(getTraitInstance(ctx.traitInstances, IsInactive)!);
     }
 
     // Add IsExcluded to the forbidden list
@@ -490,7 +490,7 @@ export function createQueryInstance<T extends QueryParameter[]>(
                     if (logic === 'or' && matches) break;
                 }
 
-                if (matches && (query.includeDisabled || !entity.has(IsDisabled))) {
+                if (matches && (query.includeInactive || !entity.has(IsInactive))) {
                     if (hasRelationFilters) {
                         let relationMatch = true;
                         for (const pair of query.relationFilters!) {

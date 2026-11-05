@@ -55,7 +55,7 @@ export const createQueryHash = (parameters: QueryParameter[]): QueryHash => {
         }
 
         if (isModifier(param)) {
-            if (param.type === 'include-disabled') {
+            if (param.type === 'include-inactive') {
                 sortBuf[cursor++] = -1;
                 continue;
             }

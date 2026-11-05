@@ -1,6 +1,7 @@
 import { ActionInstance } from '../actions/types';
 import type { $internal } from '../common';
 import type { Entity } from '../entity/types';
+import type { EntityTraits } from '../entity/entity-traits';
 import type { createEntityIndex } from '../entity/utils/entity-index';
 import type {
     Query,
@@ -25,11 +26,18 @@ export type WorldOptions = {
     lazy?: boolean;
 };
 
+/** Observes storage changes for internal consumers without running user operations. */
+type TraitRemovalObserver = {
+    removed(entity: Entity): void;
+    released(entity: Entity, slot: number, hadTrait: boolean): void;
+};
+
 export type WorldInternal = {
+    traitRemovalObservers?: Map<TraitInstance, TraitRemovalObserver> | undefined;
     entityIndex: ReturnType<typeof createEntityIndex>;
     entityMasks: number[][];
     activationNotifications?: [import('../query/types').QuerySubscriber, Entity][];
-    entityTraits: Map<number, Set<Trait>>;
+    entityTraits: EntityTraits;
     bitflag: number;
     traitInstances: (TraitInstance | undefined)[];
     relations: Set<Relation<Trait>>;
@@ -44,6 +52,7 @@ export type WorldInternal = {
     worldEntity: Entity;
     trackedTraits: Set<Trait>;
     resetSubscriptions: Set<(world: World) => void>;
+    entityDestroySubscriptions: Set<(entity: Entity) => void>;
 };
 
 export type World = {
@@ -63,6 +72,8 @@ export type World = {
     set<T extends Trait>(trait: T, value: TraitValue<ExtractSchema<T>> | SetTraitCallback<T>): void;
     destroy(): void;
     reset(): void;
+    /** ID解放後に通知する。resetでは全Entityの終了通知後に購読を解除する。 */
+    onEntityDestroy(callback: (entity: Entity) => void): QueryUnsubscriber;
     query<T extends QueryParameter[]>(key: Query<T>): QueryResult<T>;
     query<T extends QueryParameter[]>(...parameters: T): QueryResult<T>;
     queryFirst<T extends QueryParameter[]>(key: Query<T>): Entity | undefined;

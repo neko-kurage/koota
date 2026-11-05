@@ -5,7 +5,8 @@ import type { World } from '../../world';
 // 0 - has
 // 1 - not
 // 2 - or
-let cursor = 3;
+const firstTrackingId = 3;
+let cursor = firstTrackingId;
 
 export function createTrackingId() {
     return cursor++;
@@ -16,6 +17,8 @@ export function getTrackingCursor() {
 }
 
 export function setTrackingMasks(world: World, id: number) {
+    // FORK(Query/tracking-storage): has/not/orの予約IDは追跡maskを読まない。
+    if (id < firstTrackingId) return;
     const ctx = world[$internal];
     const snapshot = structuredClone(ctx.entityMasks);
     ctx.trackingSnapshots.set(id, snapshot);
