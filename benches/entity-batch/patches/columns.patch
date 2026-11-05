@@ -1,0 +1,58 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -552,7 +552,7 @@
+ export function prepareBatchTraits(
+     world: World,
+     traits: ConfigurableTrait[]
+-): ((entity: Entity) => void) | undefined {
++): ((entities: Entity[]) => void) | undefined {
+     const ctx = world[$internal];
+     for (const query of ctx.queriesHashMap.values()) {
+         if (query.addSubscriptions.size || query.removeSubscriptions.size) return;
+@@ -585,11 +585,26 @@
+         entry.instance = getTraitInstance(ctx.traitInstances, entry.trait)!;
+     }
+ 
+-    return (entity) => {
+-        for (let index = 0; index < prepared.length; index++) {
+-            const { trait, value, instance } = prepared[index];
+-            addTraitInstance(world, entity, trait, instance!);
+-            trait[$internal].fastSet(getEntityId(entity), instance!.store, value);
++    // Queryがなければ、同じ列とsetterを続けて使える。QueryがあればEntityごとの遷移順を保つ。
++    if (ctx.queriesHashMap.size === 0) {
++        return (entities) => {
++            for (const { trait, value, instance } of prepared) {
++                const set = trait[$internal].fastSet;
++                for (let index = 0; index < entities.length; index++) {
++                    const entity = entities[index];
++                    addTraitInstance(world, entity, trait, instance!);
++                    set(getEntityId(entity), instance!.store, value);
++                }
++            }
++        };
++    }
++
++    return (entities) => {
++        for (const entity of entities) {
++            for (const { trait, value, instance } of prepared) {
++                addTraitInstance(world, entity, trait, instance!);
++                trait[$internal].fastSet(getEntityId(entity), instance!.store, value);
++            }
+         }
+     };
+ }
+--- a/packages/core/src/entity/spawn-batch.ts
++++ b/packages/core/src/entity/spawn-batch.ts
+@@ -20,11 +20,11 @@
+     for (let index = 0; index < count; index++) {
+         if (initialize) {
+             const entity = allocateEntityInWorld(world);
+-            initialize(entity);
+             entities[index] = entity;
+         } else {
+             entities[index] = createEntity(world, ...traits);
+         }
+     }
++    if (initialize) initialize(entities);
+     return entities;
+ }

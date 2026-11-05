@@ -1,0 +1,75 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -455,15 +455,8 @@
+     const ctx = world[$internal];
+     const { generationId, bitflag, queries, trackingQueries } = instance;
+ 
+-    // Add bitflag to entity bitmask
+     const eid = getEntityId(entity);
+-    ctx.entityMasks[generationId][eid] |= bitflag;
+-
+-    // Set the entity as dirty
+-    for (const dirtyMask of ctx.dirtyMasks.values()) {
+-        if (!dirtyMask[generationId]) dirtyMask[generationId] = [];
+-        dirtyMask[generationId][eid] |= bitflag;
+-    }
++    markTraitInMasks(world, eid, generationId, bitflag);
+ 
+     // Update non-tracking queries (no event data needed)
+     for (const query of queries) {
+@@ -493,6 +486,25 @@
+     ctx.entityTraits.get(entity)!.add(trait);
+ 
+     return instance;
++}
++
++// FORK(Entity/batch-spawn): Trait単位と同じ世代の一括maskを、同じ処理で反映する。
++/* @inline */ function markTraitInMasks(
++    world: World,
++    eid: number,
++    generationId: number,
++    bitflag: number
++): void {
++    const ctx = world[$internal];
++    // Add bitflag to entity bitmask
++    ctx.entityMasks[generationId][eid] |= bitflag;
++
++    // Set the entity as dirty
++    for (const dirtyMask of ctx.dirtyMasks.values()) {
++        if (!dirtyMask[generationId]) dirtyMask[generationId] = [];
++        dirtyMask[generationId][eid] |= bitflag;
++    }
++
+ }
+ 
+ /**
+@@ -587,6 +599,29 @@
+         prepared.push({ trait, value, instance: getTraitInstance(ctx.traitInstances, trait)! });
+     }
+ 
++    // Queryがない呼出しでは途中の所属を観測できないため、世代ごとにmaskをまとめる。
++    // factory・通知・公開storeは上で通常生成へ戻す。EntityごとのTrait集合は独立したまま。
++    if (ctx.queriesHashMap.size === 0) {
++        const masks = new Map<number, number>();
++        for (const { instance } of prepared) {
++            const { generationId, bitflag } = instance;
++            masks.set(generationId, (masks.get(generationId) ?? 0) | bitflag);
++        }
++        const groups = [...masks];
++        return (entity) => {
++            const eid = getEntityId(entity);
++            for (let index = 0; index < groups.length; index++) {
++                const [generationId, bitflag] = groups[index];
++                markTraitInMasks(world, eid, generationId, bitflag);
++            }
++            const entityTraits = ctx.entityTraits.get(entity)!;
++            for (const { trait, value, instance } of prepared) {
++                entityTraits.add(trait);
++                trait[$internal].set(eid, instance.store, value);
++            }
++        };
++    }
++
+     return (entity) => {
+         for (let index = 0; index < prepared.length; index++) {
+             const { trait, value, instance } = prepared[index];

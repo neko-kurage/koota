@@ -1,0 +1,69 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -537,3 +537,40 @@
+     // Remove trait from entity internally
+     ctx.entityTraits.get(entity)!.delete(trait);
+ }
++
++// FORK(Entity/batch-spawn): 利用者の処理を呼ばない初期化だけを、一括呼出しの間で共有する。
++export function prepareBatchTraits(
++    world: World,
++    traits: ConfigurableTrait[]
++): ((entity: Entity) => void) | undefined {
++    const ctx = world[$internal];
++    for (const query of ctx.queriesHashMap.values()) {
++        if (query.addSubscriptions.size || query.removeSubscriptions.size) return;
++    }
++
++    const prepared: { trait: Trait; value: Record<string, any> }[] = [];
++    for (const config of traits) {
++        if (Array.isArray(config) || isRelationPair(config)) return;
++        const trait = config as Trait;
++        if (isOrderedTrait(trait) || trait[$internal].type === 'aos') return;
++        const instance = getTraitInstance(ctx.traitInstances, trait);
++        if (instance?.addSubscriptions.size || instance?.storeExposed) return;
++        const schema = trait.schema as Record<string, unknown>;
++        if (Object.getPrototypeOf(schema) !== Object.prototype) return;
++        const value: Record<string, any> = {};
++        for (const key of Object.keys(schema)) {
++            const descriptor = Object.getOwnPropertyDescriptor(schema, key)!;
++            if (!('value' in descriptor) || typeof descriptor.value === 'function') return;
++            value[key] = descriptor.value;
++        }
++        prepared.push({ trait, value });
++    }
++
++    return (entity) => {
++        for (let index = 0; index < prepared.length; index++) {
++            const { trait, value } = prepared[index];
++            const instance = addTraitToEntity(world, entity, trait);
++            if (instance) trait[$internal].set(getEntityId(entity), instance.store, value);
++        }
++    };
++}
+--- a/packages/core/src/entity/spawn-batch.ts
++++ b/packages/core/src/entity/spawn-batch.ts
+@@ -1,4 +1,5 @@
+ import { createEntity } from './entity';
++import { prepareBatchTraits } from '../trait/trait';
+ import type { Entity } from './types';
+ import type { ConfigurableTrait } from '../trait/types';
+ import type { World } from '../world';
+@@ -10,8 +11,16 @@
+     }
+ 
+     const entities = new Array<Entity>(count);
++    if (count === 0) return entities;
++    const initialize = prepareBatchTraits(world, traits);
+     for (let index = 0; index < count; index++) {
+-        entities[index] = createEntity(world, ...traits);
++        if (initialize) {
++            const entity = createEntity(world);
++            initialize(entity);
++            entities[index] = entity;
++        } else {
++            entities[index] = createEntity(world, ...traits);
++        }
+     }
+     return entities;
+ }

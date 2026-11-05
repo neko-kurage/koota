@@ -1,0 +1,28 @@
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -88,3 +88,5 @@
+ export { bindEntityActivation, setEntityEnabledGate } from './entity/entity-activation';
+ export type { EntityActivationBinding } from './entity/entity-activation';
+ export { setEntitiesEnabledGate } from './entity/entity-activation';
++
++export { spawnBatch } from './entity/spawn-batch';
+--- /dev/null
++++ b/packages/core/src/entity/spawn-batch.ts
+@@ -0,0 +1,17 @@
++import { createEntity } from './entity';
++import type { Entity } from './types';
++import type { ConfigurableTrait } from '../trait/types';
++import type { World } from '../world';
++
++// FORK(Entity/batch-spawn): 同じ初期構成を持つEntityを、通知順を変えずにまとめて生成する試作。
++export function spawnBatch(world: World, count: number, ...traits: ConfigurableTrait[]): Entity[] {
++    if (!Number.isSafeInteger(count) || count < 0 || count > 0xffffffff) {
++        throw new RangeError('Entity count must be a non-negative array length.');
++    }
++
++    const entities = new Array<Entity>(count);
++    for (let index = 0; index < count; index++) {
++        entities[index] = createEntity(world, ...traits);
++    }
++    return entities;
++}

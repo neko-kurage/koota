@@ -1,0 +1,11 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -589,7 +589,7 @@
+         for (let index = 0; index < prepared.length; index++) {
+             const { trait, value, instance } = prepared[index];
+             addTraitInstance(world, entity, trait, instance!);
+-            trait[$internal].set(getEntityId(entity), instance!.store, value);
++            trait[$internal].fastSet(getEntityId(entity), instance!.store, value);
+         }
+     };
+ }

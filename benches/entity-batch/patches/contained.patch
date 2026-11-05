@@ -1,0 +1,49 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -443,20 +443,17 @@
+     if (!hasTraitInstance(ctx.traitInstances, trait)) registerTrait(world, trait);
+ 
+     const instance = getTraitInstance(ctx.traitInstances, trait)!;
+-    return addTraitInstance(world, entity, trait, instance);
+-}
+-
+-/* @inline */ function addTraitInstance(
+-    world: World,
+-    entity: Entity,
+-    trait: Trait,
+-    instance: TraitInstance
+-): TraitInstance {
+-    const ctx = world[$internal];
+     const { generationId, bitflag, queries, trackingQueries } = instance;
+ 
++    // Add bitflag to entity bitmask
+     const eid = getEntityId(entity);
+-    markTraitInMasks(world, eid, generationId, bitflag);
++    ctx.entityMasks[generationId][eid] |= bitflag;
++
++    // Set the entity as dirty
++    for (const dirtyMask of ctx.dirtyMasks.values()) {
++        if (!dirtyMask[generationId]) dirtyMask[generationId] = [];
++        dirtyMask[generationId][eid] |= bitflag;
++    }
+ 
+     // Update non-tracking queries (no event data needed)
+     for (const query of queries) {
+@@ -488,7 +485,7 @@
+     return instance;
+ }
+ 
+-// FORK(Entity/batch-spawn): 通常追加と世代単位の一括追加でmask反映を共有する。
++// FORK(Entity/batch-spawn): Queryのない一括生成で、世代ごとに合成したmaskを反映する。
+ /* @inline */ function markTraitInMasks(
+     world: World,
+     eid: number,
+@@ -626,7 +623,7 @@
+     return (entity) => {
+         for (let index = 0; index < prepared.length; index++) {
+             const { trait, value, instance } = prepared[index];
+-            addTraitInstance(world, entity, trait, instance);
++            addTraitToEntity(world, entity, trait);
+             trait[$internal].set(getEntityId(entity), instance.store, value);
+         }
+     };

@@ -1,0 +1,56 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -443,6 +443,16 @@
+     if (!hasTraitInstance(ctx.traitInstances, trait)) registerTrait(world, trait);
+ 
+     const instance = getTraitInstance(ctx.traitInstances, trait)!;
++    return addTraitInstance(world, entity, trait, instance);
++}
++
++/* @inline */ function addTraitInstance(
++    world: World,
++    entity: Entity,
++    trait: Trait,
++    instance: TraitInstance
++): TraitInstance {
++    const ctx = world[$internal];
+     const { generationId, bitflag, queries, trackingQueries } = instance;
+ 
+     // Add bitflag to entity bitmask
+@@ -548,7 +558,8 @@
+         if (query.addSubscriptions.size || query.removeSubscriptions.size) return;
+     }
+ 
+-    const prepared: { trait: Trait; value: Record<string, any> }[] = [];
++    const prepared: { trait: Trait; value: Record<string, any>; instance?: TraitInstance }[] = [];
++    const included = new Set<Trait>();
+     for (const config of traits) {
+         if (Array.isArray(config) || isRelationPair(config)) return;
+         const trait = config as Trait;
+@@ -563,14 +574,22 @@
+             if (!('value' in descriptor) || typeof descriptor.value === 'function') return;
+             value[key] = descriptor.value;
+         }
+-        prepared.push({ trait, value });
++        if (!included.has(trait)) {
++            included.add(trait);
++            prepared.push({ trait, value });
++        }
++    }
++
++    for (const entry of prepared) {
++        if (!hasTraitInstance(ctx.traitInstances, entry.trait)) registerTrait(world, entry.trait);
++        entry.instance = getTraitInstance(ctx.traitInstances, entry.trait)!;
+     }
+ 
+     return (entity) => {
+         for (let index = 0; index < prepared.length; index++) {
+-            const { trait, value } = prepared[index];
+-            const instance = addTraitToEntity(world, entity, trait);
+-            if (instance) trait[$internal].set(getEntityId(entity), instance.store, value);
++            const { trait, value, instance } = prepared[index];
++            addTraitInstance(world, entity, trait, instance!);
++            trait[$internal].set(getEntityId(entity), instance!.store, value);
+         }
+     };
+ }

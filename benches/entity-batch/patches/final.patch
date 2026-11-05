@@ -1,0 +1,70 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -558,7 +558,7 @@
+         if (query.addSubscriptions.size || query.removeSubscriptions.size) return;
+     }
+ 
+-    const prepared: { trait: Trait; value: Record<string, any>; instance?: TraitInstance }[] = [];
++    const candidates: { trait: Trait; value: Record<string, any> }[] = [];
+     const included = new Set<Trait>();
+     for (const config of traits) {
+         if (Array.isArray(config) || isRelationPair(config)) return;
+@@ -576,20 +576,22 @@
+         }
+         if (!included.has(trait)) {
+             included.add(trait);
+-            prepared.push({ trait, value });
+-        }
+-    }
+-
+-    for (const entry of prepared) {
+-        if (!hasTraitInstance(ctx.traitInstances, entry.trait)) registerTrait(world, entry.trait);
+-        entry.instance = getTraitInstance(ctx.traitInstances, entry.trait)!;
++            candidates.push({ trait, value });
++        }
++    }
++
++    // 入力をすべて検査してから登録し、利用不可なbatchでworldを変更しない。
++    const prepared: { trait: Trait; value: Record<string, any>; instance: TraitInstance }[] = [];
++    for (const { trait, value } of candidates) {
++        if (!hasTraitInstance(ctx.traitInstances, trait)) registerTrait(world, trait);
++        prepared.push({ trait, value, instance: getTraitInstance(ctx.traitInstances, trait)! });
+     }
+ 
+     return (entity) => {
+         for (let index = 0; index < prepared.length; index++) {
+             const { trait, value, instance } = prepared[index];
+-            addTraitInstance(world, entity, trait, instance!);
+-            trait[$internal].set(getEntityId(entity), instance!.store, value);
++            addTraitInstance(world, entity, trait, instance);
++            trait[$internal].set(getEntityId(entity), instance.store, value);
+         }
+     };
+ }
+--- a/packages/core/src/entity/spawn-batch.ts
++++ b/packages/core/src/entity/spawn-batch.ts
+@@ -12,13 +12,19 @@
+ 
+     const entities = new Array<Entity>(count);
+     if (count === 0) return entities;
+-    const initialize = prepareBatchTraits(world, traits);
+-    for (let index = 0; index < count; index++) {
+-        if (initialize) {
++    if (count === 1) {
++        entities[0] = createEntity(world, ...traits);
++        return entities;
++    }
++    const initializeTraits = prepareBatchTraits(world, traits);
++    if (initializeTraits) {
++        for (let index = 0; index < count; index++) {
+             const entity = createEntity(world);
+-            initialize(entity);
++            initializeTraits(entity);
+             entities[index] = entity;
+-        } else {
++        }
++    } else {
++        for (let index = 0; index < count; index++) {
+             entities[index] = createEntity(world, ...traits);
+         }
+     }

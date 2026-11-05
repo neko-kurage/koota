@@ -1,0 +1,86 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -488,7 +488,7 @@
+     return instance;
+ }
+ 
+-// FORK(Entity/batch-spawn): Trait単位と同じ世代の一括maskを、同じ処理で反映する。
++// FORK(Entity/batch-spawn): 通常追加と世代単位の一括追加でmask反映を共有する。
+ /* @inline */ function markTraitInMasks(
+     world: World,
+     eid: number,
+@@ -496,15 +496,14 @@
+     bitflag: number
+ ): void {
+     const ctx = world[$internal];
+-    // Add bitflag to entity bitmask
++    // Entityのbitmaskへtraitのbitを追加する。
+     ctx.entityMasks[generationId][eid] |= bitflag;
+ 
+-    // Set the entity as dirty
++    // 変更をdirty maskにも記録する。
+     for (const dirtyMask of ctx.dirtyMasks.values()) {
+         if (!dirtyMask[generationId]) dirtyMask[generationId] = [];
+         dirtyMask[generationId][eid] |= bitflag;
+     }
+-
+ }
+ 
+ /**
+@@ -571,7 +570,7 @@
+     }
+ 
+     const candidates: { trait: Trait; value: Record<string, any> }[] = [];
+-    const included = new Set<Trait>();
++    const seenTraits = new Set<Trait>();
+     for (const config of traits) {
+         if (Array.isArray(config) || isRelationPair(config)) return;
+         const trait = config as Trait;
+@@ -586,8 +585,8 @@
+             if (!('value' in descriptor) || typeof descriptor.value === 'function') return;
+             value[key] = descriptor.value;
+         }
+-        if (!included.has(trait)) {
+-            included.add(trait);
++        if (!seenTraits.has(trait)) {
++            seenTraits.add(trait);
+             candidates.push({ trait, value });
+         }
+     }
+@@ -599,24 +598,26 @@
+         prepared.push({ trait, value, instance: getTraitInstance(ctx.traitInstances, trait)! });
+     }
+ 
+-    // Queryがない呼出しでは途中の所属を観測できないため、世代ごとにmaskをまとめる。
+-    // factory・通知・公開storeは上で通常生成へ戻す。EntityごとのTrait集合は独立したまま。
++    // Queryがない場合はTraitのbitを世代ごとにORし、所属mask更新をまとめる。
++    // factory・通知・公開storeなどが必要なTraitはbatch対象外となり、通常経路へ戻る。
+     if (ctx.queriesHashMap.size === 0) {
+-        const masks = new Map<number, number>();
++        const masksByGeneration = new Map<number, number>();
+         for (const { instance } of prepared) {
+             const { generationId, bitflag } = instance;
+-            masks.set(generationId, (masks.get(generationId) ?? 0) | bitflag);
+-        }
+-        const groups = [...masks];
++            const generationMask = masksByGeneration.get(generationId) ?? 0;
++            masksByGeneration.set(generationId, generationMask | bitflag);
++        }
++        const combinedMasks = [...masksByGeneration];
+         return (entity) => {
+             const eid = getEntityId(entity);
+-            for (let index = 0; index < groups.length; index++) {
+-                const [generationId, bitflag] = groups[index];
++            for (let index = 0; index < combinedMasks.length; index++) {
++                const [generationId, bitflag] = combinedMasks[index];
+                 markTraitInMasks(world, eid, generationId, bitflag);
+             }
+-            const entityTraits = ctx.entityTraits.get(entity)!;
++            // 所属と初期値はEntityごとに反映する。
++            const entityTraitSet = ctx.entityTraits.get(entity)!;
+             for (const { trait, value, instance } of prepared) {
+-                entityTraits.add(trait);
++                entityTraitSet.add(trait);
+                 trait[$internal].set(eid, instance.store, value);
+             }
+         };

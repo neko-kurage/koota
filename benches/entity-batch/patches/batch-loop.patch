@@ -1,0 +1,91 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -555,10 +555,10 @@
+ }
+ 
+ // FORK(Entity/batch-spawn): 利用者の処理を呼ばないTrait初期化を、batch内の各Entityで共有する。
+-export function prepareBatchTraits(
++export function prepareBatchSpawn(
+     world: World,
+     traits: ConfigurableTrait[]
+-): ((entity: Entity) => void) | undefined {
++): ((entities: Entity[], createEntity: (world: World) => Entity) => void) | undefined {
+     const ctx = world[$internal];
+     for (const query of ctx.queriesHashMap.values()) {
+         if (query.addSubscriptions.size || query.removeSubscriptions.size) return;
+@@ -603,26 +603,33 @@
+             masksByGeneration.set(generationId, generationMask | bitflag);
+         }
+         const combinedMasks = [...masksByGeneration];
+-        return (entity) => {
+-            const eid = getEntityId(entity);
+-            for (let index = 0; index < combinedMasks.length; index++) {
+-                const [generationId, bitflag] = combinedMasks[index];
+-                markTraitInMasks(world, eid, generationId, bitflag);
+-            }
+-            // 所属と初期値はEntityごとに反映する。
+-            const entityTraitSet = ctx.entityTraits.get(entity)!;
+-            for (const { trait, value, instance } of prepared) {
+-                entityTraitSet.add(trait);
+-                trait[$internal].set(eid, instance.store, value);
++        return (entities, createEntity) => {
++            for (let row = 0; row < entities.length; row++) {
++                const entity = createEntity(world);
++                const eid = getEntityId(entity);
++                for (let index = 0; index < combinedMasks.length; index++) {
++                    const [generationId, bitflag] = combinedMasks[index];
++                    markTraitInMasks(world, eid, generationId, bitflag);
++                }
++                const entityTraitSet = ctx.entityTraits.get(entity)!;
++                for (const { trait, value, instance } of prepared) {
++                    entityTraitSet.add(trait);
++                    trait[$internal].set(eid, instance.store, value);
++                }
++                entities[row] = entity;
+             }
+         };
+     }
+ 
+-    return (entity) => {
+-        for (let index = 0; index < prepared.length; index++) {
+-            const { trait, value, instance } = prepared[index];
+-            addTraitToEntity(world, entity, trait);
+-            trait[$internal].set(getEntityId(entity), instance.store, value);
++    return (entities, createEntity) => {
++        for (let row = 0; row < entities.length; row++) {
++            const entity = createEntity(world);
++            for (let index = 0; index < prepared.length; index++) {
++                const { trait, value, instance } = prepared[index];
++                addTraitToEntity(world, entity, trait);
++                trait[$internal].set(getEntityId(entity), instance.store, value);
++            }
++            entities[row] = entity;
+         }
+     };
+ }
+--- a/packages/core/src/entity/spawn-batch.ts
++++ b/packages/core/src/entity/spawn-batch.ts
+@@ -1,5 +1,5 @@
+ import { createEntity } from './entity';
+-import { prepareBatchTraits } from '../trait/trait';
++import { prepareBatchSpawn } from '../trait/trait';
+ import type { Entity } from './types';
+ import type { ConfigurableTrait } from '../trait/types';
+ import type { World } from '../world';
+@@ -16,13 +16,9 @@
+         entities[0] = createEntity(world, ...traits);
+         return entities;
+     }
+-    const initializeTraits = prepareBatchTraits(world, traits);
+-    if (initializeTraits) {
+-        for (let index = 0; index < count; index++) {
+-            const entity = createEntity(world);
+-            initializeTraits(entity);
+-            entities[index] = entity;
+-        }
++    const spawn = prepareBatchSpawn(world, traits);
++    if (spawn) {
++        spawn(entities, createEntity);
+     } else {
+         for (let index = 0; index < count; index++) {
+             entities[index] = createEntity(world, ...traits);

@@ -1,0 +1,48 @@
+--- a/packages/core/src/entity/entity.ts
++++ b/packages/core/src/entity/entity.ts
+@@ -13,6 +13,13 @@
+ import './entity-methods-patch';
+ 
+ export function createEntity(world: World, ...traits: ConfigurableTrait[]): Entity {
++    const entity = allocateEntityInWorld(world);
++    addTrait(world, entity, ...traits);
++    return entity;
++}
++
++// FORK(Entity/batch-spawn): 所属とNot Queryの初期化を、通常生成と一括生成で共用する。
++/* @inline */ export function allocateEntityInWorld(world: World): Entity {
+     const ctx = world[$internal];
+     const entity = allocateEntity(ctx.entityIndex);
+ 
+@@ -24,7 +31,6 @@
+     }
+ 
+     ctx.entityTraits.set(entity, new Set());
+-    addTrait(world, entity, ...traits);
+ 
+     return entity;
+ }
+--- a/packages/core/src/entity/spawn-batch.ts
++++ b/packages/core/src/entity/spawn-batch.ts
+@@ -1,4 +1,4 @@
+-import { createEntity } from './entity';
++import { allocateEntityInWorld, createEntity } from './entity';
+ import { prepareBatchTraits } from '../trait/trait';
+ import type { Entity } from './types';
+ import type { ConfigurableTrait } from '../trait/types';
+@@ -12,10 +12,14 @@
+ 
+     const entities = new Array<Entity>(count);
+     if (count === 0) return entities;
++    if (count === 1) {
++        entities[0] = createEntity(world, ...traits);
++        return entities;
++    }
+     const initialize = prepareBatchTraits(world, traits);
+     for (let index = 0; index < count; index++) {
+         if (initialize) {
+-            const entity = createEntity(world);
++            const entity = allocateEntityInWorld(world);
+             initialize(entity);
+             entities[index] = entity;
+         } else {

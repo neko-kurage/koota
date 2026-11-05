@@ -1,0 +1,408 @@
+{
+  "base": "6c6698de82a8b37f0ad2d76dcb33de8def35606b",
+  "toolchain": {
+    "node": "24.4.0",
+    "pnpm": "10.32.0",
+    "lockSha256": "1a79f20a74ae758a31bc8e51546dc7efd9930083df8ae3373e4c5ac63d2650f9"
+  },
+  "versions": {
+    "baseline": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "e005e37ec54c0289a5fdfff98a4f93cc619363a9f18e5c9d213434194805cabb",
+        "packages/core/src/trait/trait.ts": "50b4c7a8c395f643b2d6259f5af2a2544bfd10df81e007bf035df2ba90b84a5a"
+      },
+      "dist": {
+        "chunk-CPVU4NHH.js": "8bd3f2f0b32a5dfb6e157e2c4ea308fc040de4bc17c2a83bf8718db2916c30ea",
+        "index.cjs": "6215048f2d51bec538d434136200297a0411c8b9c158cc55bc83fabd3f133a4a",
+        "index.d.cts": "e2edb372615ed9c902f67f6bf184a14fe911674a762417245b9527ff64bb5105",
+        "index.d.ts": "4e0af31edf48e2dec66e5c5820188c2579e83691fa2cb6709fca03bd6d601df3",
+        "index.js": "c994bfde4b9690337c8c4349efae5a93cc8a4f58638bfed21e839d5ca1ef9d04",
+        "react.cjs": "2edd1364a7cd0ec248f0ab641528cc88e66352b82601966495931982801fcb44",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "4b9130b598f1c65f04994312a5fc2437580e429ec9db55f234bbb5b4116ec7ac",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "wrapper": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "50b4c7a8c395f643b2d6259f5af2a2544bfd10df81e007bf035df2ba90b84a5a",
+        "packages/core/src/entity/spawn-batch.ts": "34ac311a2279895d823e171106d92b3bea158836cd0e5d38dd7a4fd8e5ff80c0"
+      },
+      "parent": "baseline",
+      "patch": "patches/wrapper.patch",
+      "dist": {
+        "chunk-76S57ZJR.js": "e38368ca23c84618d3709b66879e43ad3d58d370b953f34be3fe9947578829c3",
+        "index.cjs": "852bcf1f1f067444ccdf0ae3ce913bcf9ede2e916f4385308f15a5393f5cd9b0",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "029441794763f89920d71a43e95e4cc36b9086fa628a135d1a97b8be2e5028f8",
+        "react.cjs": "2edd1364a7cd0ec248f0ab641528cc88e66352b82601966495931982801fcb44",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "e87fee28616a02f2baf098943f1136ec116eb19b5de50adf37cb12d73055b461",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "prepared": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "4ad93f86997d9a33aaa5376c09172ca4df3de6c9fb19cce5af6bc1cc78a72b62",
+        "packages/core/src/entity/spawn-batch.ts": "11b3378c7a3087f4c571bd1156c74cb28e1554410f83c06c5b5e10b9ee6e958a"
+      },
+      "parent": "wrapper",
+      "patch": "patches/prepared.patch",
+      "dist": {
+        "chunk-DEHUB4UJ.js": "ef5db10e8be016307d78f059054f3be12d08ad8d4d9bc43b268fb0ad780a598d",
+        "index.cjs": "52026ebee86ba78af090c6a50c94c84f9392939c1ff90cdacb5eb120af26990b",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "20e8a4a06fa260740293242093153bcb7dd9b55b20f01ab1ee1aead0ecacef79",
+        "react.cjs": "2edd1364a7cd0ec248f0ab641528cc88e66352b82601966495931982801fcb44",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "329ea384c90e886fb34c572d606b144a166a152033838c6944e56622ac6c65ae",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "cached": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "2fc89a17692f645f3e0ffc6932c999a760dc091eb1326a5f8e58dfe78cbc8f7a",
+        "packages/core/src/entity/spawn-batch.ts": "11b3378c7a3087f4c571bd1156c74cb28e1554410f83c06c5b5e10b9ee6e958a"
+      },
+      "parent": "prepared",
+      "patch": "patches/cached.patch",
+      "dist": {
+        "chunk-CAT7OLYQ.js": "9e705d1629ea55da7339ae93ec03cd67d1390888482e8f940bb6052b9800af47",
+        "index.cjs": "dd18b92cb8b18e8b646d2702e05600e6023aea28e9d2151fd5baa00505fbf82d",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "aab0217c6acab2919e8d1528d9efd6f49a68348bf8e8d02799ff1c58eb89cf39",
+        "react.cjs": "f4f74fb98fe50d752f4256962c775b1af6b7c4d5d80a3d22875f89c6deddebc8",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "c0e6b3c9cb820c37e3b07d1467f206dd4dcb24b82bacaa486a5f1538bb611c98",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "allocation": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "f42dba59a9c2a819498626cc749b9f0c40abf5bfbc8cb438684d4382fca15b5f",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "2fc89a17692f645f3e0ffc6932c999a760dc091eb1326a5f8e58dfe78cbc8f7a",
+        "packages/core/src/entity/spawn-batch.ts": "dddc46f981f223004b8da4959e211f17a274eb77ef611c513f80496ad787adee"
+      },
+      "parent": "cached",
+      "patch": "patches/allocation.patch",
+      "dist": {
+        "chunk-KYINBKSN.js": "b26b86aa9f65447f6e0bbac6b493f8a6f8dc448c5faa6a71b55b81397b7bffd3",
+        "index.cjs": "6f4c385e080b346565bfbe05e66154c3a5389e875fd15b383d371e2faa552eb9",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "14ebc91361d4636c8a526241914d43bc9faac8fe36d5d2614c874990e6d1f65b",
+        "react.cjs": "591ff92e3b0be4507976833a118884fe956df4a5d811a9e2dc67296e9b45bc55",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "8b98146f64a801a0e2876f7a13f331c76cff69f082fac6a1212811faadac1cf7",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "fast-set": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "f42dba59a9c2a819498626cc749b9f0c40abf5bfbc8cb438684d4382fca15b5f",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "ec6bc96c09d97e1c9065b877931ed28f95bba3fe969918e401c163d40971262a",
+        "packages/core/src/entity/spawn-batch.ts": "dddc46f981f223004b8da4959e211f17a274eb77ef611c513f80496ad787adee"
+      },
+      "parent": "allocation",
+      "patch": "patches/fast-set.patch",
+      "dist": {
+        "chunk-HV7BNN4J.js": "9912fb78c1fd244c8088fb9b5d9f964b58d4bcdd8f2a8d2d027f395b0e950356",
+        "index.cjs": "0136081dd1969721c5101ac5433a7cd5b79a395e0a99275fff9bc4f4bc5f302c",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "0f7f112f34fad2554a30441a94c948b2dee1ee1b86ca1e127bd7d6f962161d41",
+        "react.cjs": "0634910d4156136c2d517ec58465e21245751fee2984f4ceb39745e8b83b9063",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "76938baad830992ed61c6622182d456d6dff81167fdb67ba01978b9303f25e67",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "columns": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "f42dba59a9c2a819498626cc749b9f0c40abf5bfbc8cb438684d4382fca15b5f",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "079a05ff2b3ab67189e42fc61e56bcfd815be3cf6c2f7d91b6906efcb7e8b2fc",
+        "packages/core/src/entity/spawn-batch.ts": "c9ee329e026d2e5419608ac3d185a75e05fa3f1b6e09f25cd8d73562b3adaa14"
+      },
+      "parent": "fast-set",
+      "patch": "patches/columns.patch",
+      "dist": {
+        "chunk-4LIJG4CZ.js": "99c1bc9f2269434e3475f55f3b55527b78f6edcc814bc02d8d118c4cf33ac6e4",
+        "index.cjs": "7ff6677afd1b9920af6d4929a3ee6cc73c7e8392e1511b4ef0309fe1e9ca07d7",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "ac99e7fe532914852a0d88973f704c1d26eff64d21d496e1c0a9b56d4b42e79e",
+        "react.cjs": "591ff92e3b0be4507976833a118884fe956df4a5d811a9e2dc67296e9b45bc55",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "245a0db9f405ec312dbf6f8b46f6520aaff7922ffa0c0582f850657ddba42507",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "final": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "d7a81253b077cdbf411d7c68f5635f9a28a29a76ac97d8ea20d9992b5ce08112",
+        "packages/core/src/entity/spawn-batch.ts": "903c9460af9e18e678e8f62addac845d2572b7042c1441066c95c58658be08f4"
+      },
+      "parent": "cached",
+      "patch": "patches/final.patch",
+      "dist": {
+        "chunk-IBFNFPF4.js": "2c12c10b69df369e85e281ef8f24c755e1fdfb0fce91008b90a3a946e9b97aaf",
+        "index.cjs": "80069d459744fa81463b14872d7887ac51cd53e6fecaf47e1e2a5f87983045e2",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "a55885818eadaade9ee61ca3330b41b592821c8955372f2cc83e9d92ccdb034a",
+        "react.cjs": "a14e0fbe193f3c84ba7cbbf97976262e1382a59bea2ee9cd8d282a3447105e7a",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "be74cc06f757ed1d405644c2e9f0c48cc2752d457d24fa9d45cdc6aa50259907",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "masks": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "cd8c4564df5a8dff60869e37ee6378d284e9e3550696c0cc747071b880c5a49b",
+        "packages/core/src/entity/spawn-batch.ts": "903c9460af9e18e678e8f62addac845d2572b7042c1441066c95c58658be08f4"
+      },
+      "parent": "final",
+      "patch": "patches/masks.patch",
+      "dist": {
+        "chunk-44NX5PWO.js": "de92a16271f6ccbae23d49fc3a48272f6d7a962c01963145e1770c77de4a435d",
+        "index.cjs": "54dec55e08e24aca4f8cfbe52b7243e85ddfc25222ac67132bf0edf83359d89f",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "52c4337e950f3603653c75daeda885fa4df0d7c85f290e3171f8580085d535e8",
+        "react.cjs": "bbe9b4a84adb2c3ed0073617898a5f3a6c1d625508aee35a5c9594e957c7786b",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "e5c929b4d287310c7104f6ba344ea386d35c90bce7e826ff360a46b0c642a208",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "grouped": {
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "76ea203d112d3f0b21d2c9b92570cd560005204828c9250709e4cebaceca3401",
+        "packages/core/src/entity/spawn-batch.ts": "903c9460af9e18e678e8f62addac845d2572b7042c1441066c95c58658be08f4"
+      },
+      "parent": "masks",
+      "patch": "patches/grouped.patch",
+      "dist": {
+        "chunk-MKBXAHMA.js": "af5cbe1ec2bac9a516c73074d26e1e276a831fc9bf6fd797a3f1fb95a035f41c",
+        "index.cjs": "ef69e8dd306fbe6003ab9d5c4e086a375efd94540a6cc26341ced5ea6d36f645",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "a8d9d71dcc8389bdcad45b97158aaff569796edfceac151998c97997c1ca1c5f",
+        "react.cjs": "3f2e8cd9638667a16fe44767b6090cb65ecac209f076bcaa5ab0ec8d58221edd",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "f771935d1813a4e92fcc1ac821dc3520a3534cc03addb0e55898f5fd96648c21",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "contained": {
+      "parent": "grouped",
+      "patch": "patches/contained.patch",
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "bd64447ce0745d03fd9d606b98532d73c58e0700f9df2ee88e4d63497b9e8dbe",
+        "packages/core/src/entity/spawn-batch.ts": "903c9460af9e18e678e8f62addac845d2572b7042c1441066c95c58658be08f4"
+      },
+      "dist": {
+        "chunk-4H4L5WJ7.js": "d3ae15e86fa72565a6bc3d7e2ea066fe293cc5f59f13e9889b36a29d24c88987",
+        "index.cjs": "20e1ce37c8a845bd6aa49c04395462683dc18feada6f217252c230508e437f62",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "a892aa0c9e38f96b29e05112cfb2445a4c64dcb1b4d0d387039ce9bfcbf1ef56",
+        "react.cjs": "2edd1364a7cd0ec248f0ab641528cc88e66352b82601966495931982801fcb44",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "9479bd48d0b5f29c9fc9a43b7108f928d0db24a8c686cb60bcd9e98a3b323e89",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "isolated": {
+      "parent": "contained",
+      "patch": "patches/isolated.patch",
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "33aba5aa79672b77c496f1456bc2955aa4112a952be8a0456858048b9fb812b8",
+        "packages/core/src/entity/spawn-batch.ts": "903c9460af9e18e678e8f62addac845d2572b7042c1441066c95c58658be08f4"
+      },
+      "dist": {
+        "chunk-YE5CPZ77.js": "d3ae15e86fa72565a6bc3d7e2ea066fe293cc5f59f13e9889b36a29d24c88987",
+        "index.cjs": "20e1ce37c8a845bd6aa49c04395462683dc18feada6f217252c230508e437f62",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "b5eb78ff1fb4cc7b4ea69c7d8c3bcf5e6c8c4c27b8aea1fa7e17a94e710d07a9",
+        "react.cjs": "2edd1364a7cd0ec248f0ab641528cc88e66352b82601966495931982801fcb44",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "663391e2f728cb440c12081980b6ca30702c4d5726a6d1117667266a03d86bed",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    },
+    "batch-loop": {
+      "parent": "isolated",
+      "patch": "patches/batch-loop.patch",
+      "files": {
+        "packages/core/src/entity/entity.ts": "e1acad34b2fad322a216abd5d4b0cd77cc3deb750793f1808d3b968dd3df9a98",
+        "packages/core/src/index.ts": "2a53fee01e9a7149d1d596c6ab7aed77c45bd9e57d7ed071cf0a8717ac84b87a",
+        "packages/core/src/trait/trait.ts": "913a37ed5eca5cbb55dff31194163e0fb532287220bb66a03c74236d7cfc0526",
+        "packages/core/src/entity/spawn-batch.ts": "f1721d2a87a52fbb48b8136787c70e18af9a567ac7888a642745a82afbc7cfca"
+      },
+      "dist": {
+        "chunk-4BLXFAZ3.js": "d4511db8ced93f715c24dc6fbdea389eb680c5a624d212507cb3588b25b191d4",
+        "index.cjs": "175e321f1bb90df92acf9336e4a8fc7c87edf50c48d2d5530d541d4f552074d5",
+        "index.d.cts": "f1113c7541f793aed82d05d85c9f88d84c14e1c7ee5290b478927e2b593956b4",
+        "index.d.ts": "20ce8b27b50a3e93e555ae48a88bf93fa452a5e24cbcbd2d8e8e7b2814161ea4",
+        "index.js": "0a16dd158f1d8e8ccaf6ae06f954214763f4d25b56fccccf5c891c909fe0965f",
+        "react.cjs": "2edd1364a7cd0ec248f0ab641528cc88e66352b82601966495931982801fcb44",
+        "react.d.cts": "d77b36234e131054f7fac2c4d041938e40d60859b38807acb78fcf7b221ef77a",
+        "react.d.ts": "1fda1bb44b246bf4b5a4ab0f503a181dba293408620094496dac6212b7abe092",
+        "react.js": "ee7f854ff0a3ce7c4cbbd26abdc669a9cec38d7385bb481edd6bf81ad4150b60",
+        "types-DzKYZz_r.d.cts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7",
+        "types-DzKYZz_r.d.ts": "5240f24e0347b828325d21bc78de4e498052c9e6371c90d5bf6df3dbfa84ece7"
+      }
+    }
+  },
+  "contracts": {
+    "patch": "patches/contracts.patch",
+    "path": "packages/core/tests/spawn-batch.test.ts",
+    "sha256": "69cabd936dda6e017652b257c2a775fbea55357a26257e113d7a9c585e3e7d35"
+  },
+  "formal": {
+    "prepared": {
+      "variant": "final",
+      "raw": "formal",
+      "measureSha256": "e2701f020e1d26cdaa9e051777bbc1cd84b65cf9e00d036bd55e12219707be07"
+    },
+    "grouped": {
+      "variant": "grouped",
+      "raw": "formal-grouped",
+      "measureSha256": "e2701f020e1d26cdaa9e051777bbc1cd84b65cf9e00d036bd55e12219707be07"
+    },
+    "isolated": {
+      "variant": "isolated",
+      "raw": "formal-isolated",
+      "measureSha256": "e2701f020e1d26cdaa9e051777bbc1cd84b65cf9e00d036bd55e12219707be07"
+    }
+  },
+  "selected": "isolated",
+  "diagnostics": {
+    "diagnostic-prepared": {
+      "variant": "prepared",
+      "fixture": "fixtures/diagnostic-v0.mjs",
+      "fixtureSha256": "9b18f28caa3e62675b7cf52525e1f4d08993cbe6bf3fa00bba30606b85ad35ad",
+      "valid": false,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-cached": {
+      "variant": "cached",
+      "fixture": "fixtures/diagnostic-v0.mjs",
+      "fixtureSha256": "9b18f28caa3e62675b7cf52525e1f4d08993cbe6bf3fa00bba30606b85ad35ad",
+      "valid": false,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-cached-fixture-fixed": {
+      "variant": "cached",
+      "fixture": "fixtures/diagnostic-v1.mjs",
+      "fixtureSha256": "d5fbf107dbf227e2b04ce1fbad75963bf421dcc0d838dc031285592bcc7edc65",
+      "valid": true,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-allocation": {
+      "variant": "allocation",
+      "fixture": "fixtures/diagnostic-v1.mjs",
+      "fixtureSha256": "d5fbf107dbf227e2b04ce1fbad75963bf421dcc0d838dc031285592bcc7edc65",
+      "valid": true,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-fast-set": {
+      "variant": "fast-set",
+      "fixture": "fixtures/diagnostic-v1.mjs",
+      "fixtureSha256": "d5fbf107dbf227e2b04ce1fbad75963bf421dcc0d838dc031285592bcc7edc65",
+      "valid": true,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-columns": {
+      "variant": "columns",
+      "fixture": "fixtures/diagnostic-v1.mjs",
+      "fixtureSha256": "d5fbf107dbf227e2b04ce1fbad75963bf421dcc0d838dc031285592bcc7edc65",
+      "valid": true,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-wrapper": {
+      "variant": "wrapper",
+      "fixture": "fixtures/diagnostic-v2.mjs",
+      "fixtureSha256": "f1103e23399bf4512f36235366f81a3c4e114920af461c345c989d925b96eba8",
+      "valid": true,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-prepared-fixture-fixed": {
+      "variant": "prepared",
+      "fixture": "fixtures/diagnostic-v2.mjs",
+      "fixtureSha256": "f1103e23399bf4512f36235366f81a3c4e114920af461c345c989d925b96eba8",
+      "valid": true,
+      "fixtureRestoredFromCommand": true
+    },
+    "diagnostic-masks": {
+      "variant": "masks",
+      "fixture": "measure.mjs",
+      "fixtureSha256": "e2701f020e1d26cdaa9e051777bbc1cd84b65cf9e00d036bd55e12219707be07",
+      "valid": true,
+      "fixtureRestoredFromCommand": false
+    },
+    "diagnostic-contained": {
+      "variant": "contained",
+      "fixture": "measure.mjs",
+      "fixtureSha256": "e2701f020e1d26cdaa9e051777bbc1cd84b65cf9e00d036bd55e12219707be07",
+      "valid": true,
+      "fixtureRestoredFromCommand": false
+    },
+    "diagnostic-batch-loop": {
+      "variant": "batch-loop",
+      "fixture": "measure.mjs",
+      "fixtureSha256": "e2701f020e1d26cdaa9e051777bbc1cd84b65cf9e00d036bd55e12219707be07",
+      "valid": true,
+      "fixtureRestoredFromCommand": false
+    }
+  }
+}

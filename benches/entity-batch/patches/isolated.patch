@@ -1,0 +1,52 @@
+--- a/packages/core/src/trait/trait.ts
++++ b/packages/core/src/trait/trait.ts
+@@ -485,24 +485,6 @@
+     return instance;
+ }
+ 
+-// FORK(Entity/batch-spawn): Queryのない一括生成で、世代ごとに合成したmaskを反映する。
+-/* @inline */ function markTraitInMasks(
+-    world: World,
+-    eid: number,
+-    generationId: number,
+-    bitflag: number
+-): void {
+-    const ctx = world[$internal];
+-    // Entityのbitmaskへtraitのbitを追加する。
+-    ctx.entityMasks[generationId][eid] |= bitflag;
+-
+-    // 変更をdirty maskにも記録する。
+-    for (const dirtyMask of ctx.dirtyMasks.values()) {
+-        if (!dirtyMask[generationId]) dirtyMask[generationId] = [];
+-        dirtyMask[generationId][eid] |= bitflag;
+-    }
+-}
+-
+ /**
+  * Core logic for removing a trait from an entity.
+  * Does not emit remove subscriptions — callers handle emission.
+@@ -556,7 +538,23 @@
+     ctx.entityTraits.get(entity)!.delete(trait);
+ }
+ 
+-// FORK(Entity/batch-spawn): 利用者の処理を呼ばない初期化だけを、一括呼出しの間で共有する。
++// FORK(Entity/batch-spawn): Queryなしbatchで合成したbitを所属maskとdirty maskへ反映する。
++/* @inline */ function markTraitInMasks(
++    world: World,
++    eid: number,
++    generationId: number,
++    bitflag: number
++): void {
++    const ctx = world[$internal];
++    ctx.entityMasks[generationId][eid] |= bitflag;
++
++    for (const dirtyMask of ctx.dirtyMasks.values()) {
++        if (!dirtyMask[generationId]) dirtyMask[generationId] = [];
++        dirtyMask[generationId][eid] |= bitflag;
++    }
++}
++
++// FORK(Entity/batch-spawn): 利用者の処理を呼ばないTrait初期化を、batch内の各Entityで共有する。
+ export function prepareBatchTraits(
+     world: World,
+     traits: ConfigurableTrait[]
