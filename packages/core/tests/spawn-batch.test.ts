@@ -12,7 +12,6 @@ import {
     Not,
     createAdded,
     relation,
-    setEntityOwnerActive,
 } from '../src';
 const worlds: ReturnType<typeof createWorld>[] = [];
 const world = () => {
@@ -55,7 +54,7 @@ it('connects ownership of every Entity before notifications and activates owner-
         'complete 1',
     ]);
     expect(w.query(Position)).toHaveLength(0);
-    for (const e of entities) setEntityOwnerActive(e, true);
+    for (const e of entities) setEntitiesOwnerActive([e], true);
     expect(events.slice(-2)).toEqual(['visible 0', 'visible 1']);
     expect([...w.query(Position)]).toEqual(entities);
     expect(entities.map((e) => e.get(Position))).toEqual([{ x: 1 }, { x: 1 }]);
@@ -74,7 +73,7 @@ it('keeps negative and tracking queries correct after recycling owner-inactive I
         const entities = spawnBatch(w, 3, { ownerActive: false, traits: [A] });
         expect(w.query(missing).filter((e) => entities.includes(e))).toEqual([]);
         expect([...w.query(added)]).toEqual(entities);
-        for (const e of entities) setEntityOwnerActive(e, true);
+        for (const e of entities) setEntitiesOwnerActive([e], true);
         expect(w.query(missing).filter((e) => entities.includes(e))).toEqual(entities);
         for (const e of entities) e.destroy();
         w.query(A, IncludeInactive());

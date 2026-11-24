@@ -10,7 +10,7 @@ import {
     IncludeInactive,
     Not,
     relation,
-    setEntityOwnerActive,
+    setEntitiesOwnerActive,
     spawnBatch,
     trait,
 } from '../src';
@@ -36,7 +36,7 @@ it('一括削除は1体ずつの削除と同じく全個体を解放し、どの
         const first = spawnBatch(w, 3, { traits: [A, B] });
         const second = spawnBatch(w, 2, { traits: [A, C] });
         const kept = w.spawn(A, B);
-        setEntityOwnerActive(first[1], false);
+        setEntitiesOwnerActive([first[1]], false);
         const targets = [...first, ...second];
         if (batch) destroyBatch(w, targets);
         else for (const entity of targets) entity.destroy();

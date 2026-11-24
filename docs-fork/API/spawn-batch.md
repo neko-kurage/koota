@@ -1,6 +1,6 @@
 ---
 date: 2026-11-04T01:38
-updated: 2026-11-05T13:18
+updated: 2026-11-24T22:38
 ---
 
 # Entityの一括生成
@@ -42,7 +42,7 @@ const entities = spawnBatch(world, traitsByEntity.length, { traitsByEntity })
 
 全件を同じTrait・同じ順で指定すると、その構成の準備を共有できます。構成が異なる場合も生成できますが、個体ごとの経路を使います。Relation・AoS・順序付きTrait、共有できない既定値や追跡Queryなど、個体ごとの保存・照合を要する条件でも同様です。
 
-`enabled: false`と`ownerActive: false`を同時に指定した場合、`setEntityOwnerActive(entity, true)`で所有者を再開してもEntity自身の無効要求は残ります。自身の要求は`entity.setEnabled(true)`で変えます。[有効状態とQuery参加](../Architecture/Structure/Entity/01-activation.md)を参照してください。
+`enabled: false`と`ownerActive: false`を同時に指定した場合、`setEntitiesOwnerActive(entities, true)`で所有者を再開してもEntity自身の無効要求は残ります。自身の要求は`entity.setEnabled(true)`で変えます。[有効状態とQuery参加](../Architecture/Structure/Entity/01-activation.md)を参照してください。
 
 ## 所有接続と通知の順序
 

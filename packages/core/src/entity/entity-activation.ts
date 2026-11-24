@@ -66,15 +66,6 @@ export function setEntityEnabled(entity: Entity, enabled: boolean): void {
     else value.disabled.add(entity);
     withActivationNotifications(world, () => apply(world, entity, value));
 }
-export function setEntityOwnerActive(entity: Entity, active: boolean): void {
-    const world = live(entity);
-    const value = state(world);
-    const slot = getEntityId(entity);
-    if (active) {
-        if (value.ownerInactiveBySlot[slot] === entity) value.ownerInactiveBySlot[slot] = undefined;
-    } else value.ownerInactiveBySlot[slot] = entity;
-    withActivationNotifications(world, () => apply(world, entity, value));
-}
 /** 一括削除で解放した個体の有効状態を消す。状態の検索は一度だけ行う。 */
 export function clearEntitiesActivation(world: World, entities: readonly Entity[]): void {
     const value = states.get(world);

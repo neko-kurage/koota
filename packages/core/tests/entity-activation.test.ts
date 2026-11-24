@@ -6,7 +6,6 @@ import {
     createQuery,
     createChanged,
     relation,
-    setEntityOwnerActive,
     setEntitiesOwnerActive,
     IsInactive,
     spawnBatch,
@@ -35,11 +34,11 @@ it('個体の設定と外部条件を合成し、値とTrait通知を維持す�
     expect(w.query(Health)).toHaveLength(0);
     expect(w.query(Health, IncludeInactive())).toContain(e);
     expect(e.get(Health)).toEqual({ value: 10 });
-    setEntityOwnerActive(e, false);
+    setEntitiesOwnerActive([e], false);
     e.setEnabled(true);
     expect(e.isEnabled()).toBe(true);
     expect(e.isActive()).toBe(false);
-    setEntityOwnerActive(e, true);
+    setEntitiesOwnerActive([e], true);
     expect(events).toEqual(['leave', 'enter']);
 });
 
@@ -158,9 +157,9 @@ it('所有者の一括再開の通知失敗でも全対象の所属は更新済�
 it('Trait購読から同じ個体の要求を変えても最後の実効状態を保つ', () => {
     const w = world();
     const entity = w.spawn();
-    setEntityOwnerActive(entity, false);
+    setEntitiesOwnerActive([entity], false);
     w.onRemove(IsInactive, () => entity.setEnabled(false));
-    setEntityOwnerActive(entity, true);
+    setEntitiesOwnerActive([entity], true);
     expect(entity.isEnabled()).toBe(false);
     expect(entity.isActive()).toBe(false);
 });

@@ -1,6 +1,6 @@
 ---
 date: 2026-09-06T19:56
-updated: 2026-11-04T01:43
+updated: 2026-11-24T22:38
 ---
 
 # Koota fork資料
@@ -16,7 +16,7 @@ neko-threejsと同じ分類を使う。
 | Development  | 開発手順・規則・Audit。検討と移行はHistory、測定はPerformanceへ       |
 | Guides       | 利用手順・Quick Start・Concepts                                       |
 
-現在の独自資料は[Development](Development/00_index.md)と、追加APIの[Query結果の絞込み](API/query-results.md)・[EntityのTrait一覧](API/entity-traits.md)・[Entityの一括生成](API/spawn-batch.md)にある。Architectureは以下の現行契約を扱い、Guidesは利用手順が生まれた時に追加する。ファイル名は上流のkebab-case規則に従う。
+現在の独自資料は[Development](Development/00_index.md)と、追加APIの[EntityのTrait一覧](API/entity-traits.md)・[Entityの一括生成](API/spawn-batch.md)にある。Architectureは以下の現行契約を扱い、Guidesは利用手順が生まれた時に追加する。ファイル名は上流のkebab-case規則に従う。
 
 現行の[Entity有効状態とQuery参加](Architecture/Structure/Entity/01-activation.md)はArchitectureに記録する。
 

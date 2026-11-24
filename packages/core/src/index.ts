@@ -12,7 +12,6 @@ export { Or } from './query/modifiers/or';
 export { createRemoved } from './query/modifiers/removed';
 export { $modifier } from './query/modifier';
 export { createQuery, IsExcluded } from './query/query';
-export { retainQueryResult } from './query/retain-query-result';
 export type {
     EventType,
     InstancesFromParameters,
@@ -85,7 +84,7 @@ export type { QueryInstance } from './query/types';
 
 export { IncludeInactive } from './query/modifiers/include-inactive';
 export { IsInactive } from './query/query';
-export { setEntityOwnerActive, setEntitiesOwnerActive } from './entity/entity-activation';
+export { setEntitiesOwnerActive } from './entity/entity-activation';
 
 export { spawnBatch } from './entity/spawn-batch';
 export { destroyBatch } from './entity/batch-removal';
